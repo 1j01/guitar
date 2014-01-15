@@ -3,7 +3,7 @@ var song = {
 	clear: function(){
 		this.notes = [];
 		//this.tuning = "EBGDAE";
-		this.tabs = ["E:","B:","G:","D:","A:","E:"];
+		this.tabs = ["E|","B|","G|","D|","A|","E|"];
 		this.pos = 0;
 	},
 	toJSON: function(){ //not used
@@ -26,7 +26,7 @@ var interpretTabs = function(str){
 		for(var i=0;i<lines.length;i++){
 			var m = lines[i].match(/^\s*(\w)\s*(.*)$/);
 			var stringName = m[1].toUpperCase();
-			var someNotes = m[2];
+			var someNotes = m[2].trim();
 			if(stringName === "E" && i===0){
 				stringName = "e";
 			}
@@ -44,7 +44,7 @@ var interpretTabs = function(str){
 			for(var i=0;i<lines.length;i++){
 				var m = lines[i].match(/^\s*(\w)\s*(.*)$/);
 				var stringName = m[1].toUpperCase();
-				var someNotes = m[2];
+				var someNotes = m[2].trim();
 				if(stringName === "E" && i===0){
 					stringName = "e";
 				}
@@ -69,17 +69,33 @@ var interpretTabs = function(str){
 			console.log("block found with no string names:\n",block);
 			var lines = block.split("\n");
 			for(var i=0;i<lines.length;i++){
-				var someNotes = lines[i];
+				var someNotes = lines[i].trim();
 				noteStrings["eBGDAE"[i]] += "+"+someNotes; // STRING the notes together HAHAHAHAHAHAHAHA Uh
 			}
-			return "{...}";
+			return "{.....}";
 		});
 	}
 	
-	//@TODO: alert problems with the tabs
+	//@TODO: alert (more) problems with the tabs
 	if(noteStrings.B.length === 0){
 		console.log("Tabs interpretation failed (no music blocks found?)");
 		return "Tabs interpretation failed.";
+	}
+	
+	var l = noteStrings.e.length;
+	for(var s in noteStrings){
+		if(noteStrings[s].length !== l){
+			console.log("Tabs interpretation failed due to misalignment.");
+			var tt123 = " << (this text must line up)\n";
+			return "Tabs interpretation failed due to misalignment:\n\n"
+				+noteStrings.e+tt123
+				+noteStrings.B+tt123
+				+noteStrings.G+tt123
+				+noteStrings.D+tt123
+				+noteStrings.A+tt123
+				+noteStrings.E+tt123
+				+"\n\n(Any music blocks found were/are merged together like above.)";
+		}
 	}
 	
 	
@@ -109,9 +125,11 @@ var interpretTabs = function(str){
 		}
 	}else{
 		//ASSUME --12-- = twelve
+		//also, group chords[]
 		var pos = 0, cont = true;
 		while(cont){
 			cont = false;
+			var chord = [];
 			for(var s in noteStrings){
 				var ch = noteStrings[s][pos];
 				var ch2 = noteStrings[s][pos+1];
@@ -120,33 +138,48 @@ var interpretTabs = function(str){
 					if(ch.match(/\d/)){
 						if(ch2 && ch2.match(/\d/)){
 							var isProbablyMultiDigit = true;
-							for(var _s in noteStrings){
+							/*for(var _s in noteStrings){
 								if(noteStrings[_s][pos+1]//when a note starts on the supposed second "digit"
 								&&!noteStrings[s][pos+1]){//it can't be a second digit (or someone's absolutely horrible at writing guitar tabs)
 									isProbablyMultiDigit = false;//don't mess up
+									console.log("this is uncommon, however. ", ch,ch2);
 									break;
 								}
-							}
+							}*/
 							if(isProbablyMultiDigit){
-								notes.push({
+								chord.push({
 									f: Number(ch+ch2),
 									s: "eBGDAE".indexOf(s)
 								});
 								pos++;
 							}else{
-								notes.push({
+								chord.push({
 									f: +(ch),
 									s: "eBGDAE".indexOf(s)
 								});
 							}
 						}else{
-							notes.push({
+							chord.push({
 								f: +(ch),
 								s: "eBGDAE".indexOf(s)
 							});
 						}
 					}
 				}
+				/*if(note){
+					if(note_or_chord){
+						if(typeof note_or_chord === "array"){//warning: typeof new Array() === "object"
+							node_or_chord.push(note);
+						}else{
+							node_or_chord
+						}
+					}else{
+						note_or_chord = note;
+					}
+				}*/
+			}
+			if(chord.length > 0){
+				notes.push(chord);
 			}
 			pos++;
 		}
@@ -325,6 +358,9 @@ $(function(){
 		this.play = function(fret, bend){
 			var noten = basenoten + fret;
 			osc.frequency.value = getFrequency(noten) + bend;
+			osc.frequency.value += 5;
+			setInterval(function(){
+			},100);
 			volume.gain.value = 1.0;
 			return noten;
 		};
@@ -332,7 +368,12 @@ $(function(){
 			volume.gain.value = 0.0;
 		};
 		this.step = function(){
-			volume.gain.value *= 0.7;
+			//if(volume.gain.value>0.02){
+				volume.gain.value *= 0.7;
+				osc.frequency.value -= 0.001;
+			//}else{
+			//	volume.gain.value *= 0.9;
+			//}
 		};
 	
 	};
@@ -448,10 +489,6 @@ $(function(){
 			if(mouseOverFB && mouseString>=0 && mouseString<this.strings.length){
 				if(mouseDown){
 					ctx.fillStyle = "rgba(0,255,0,0.5)";
-					var noten = this.strings[mouseString].play(
-						mouseFret,
-						(mouseBend) ? Math.abs(mY-mouseStringY)*3 : 0
-					);
 					if(!recNote
 					|| recNote.f != mouseFret
 					|| recNote.s != mouseString){
@@ -468,6 +505,11 @@ $(function(){
 							song.tabs[s] += "-";
 						}
 						
+						this.strings[mouseString].play(
+							mouseFret,
+							(mouseBend) ? Math.abs(mY-mouseStringY)*3 : 0
+						);
+						
 						//console.log(song.tabs.join("\n"));
 					}
 				}else{
@@ -480,32 +522,35 @@ $(function(){
 			}
 			
 			//draw recorded notes playing back from keyboard
-			for(var i in playingNotes){
-				var note = playingNotes[i];
-				var b = 5;
-				ctx.fillStyle = "rgba(0,255,255,0.2)";
-				var y = note.s*sh;
-				var sy = (note.s+1/2)*sh;
-				ctx.fillRect(fretXs[note.f]+b,y+b,fretWs[note.f]/*-b*2*/,sh-b-b);
-			
-				line(
-					fretXs[note.f],sy,
-					this.w,sy,
-					"rgba(0,255,255,0.8)",
-					(note.s/3+1)*2
-				);
+			for(var key in playingNotes){
+				var chord = playingNotes[key];
+				for(var i in chord){
+					var note = chord[i];
+					var b = 5;
+					ctx.fillStyle = "rgba(0,255,255,0.2)";
+					var y = note.s*sh;
+					var sy = (note.s+1/2)*sh;
+					ctx.fillRect(fretXs[note.f]+b,y+b,fretWs[note.f]/*-b*2*/,sh-b-b);
+				
+					line(
+						fretXs[note.f],sy,
+						this.w,sy,
+						"rgba(0,255,255,0.8)",
+						(note.s/3+1)*2
+					);
+				}
 			}
 			
 			ctx.restore();
 		}
 	};
 	
-	fretboard.strings.push(new GuitarString("E5"));
-	fretboard.strings.push(new GuitarString("B4"));
-	fretboard.strings.push(new GuitarString("G4"));
-	fretboard.strings.push(new GuitarString("D4"));
-	fretboard.strings.push(new GuitarString("A3"));
-	fretboard.strings.push(new GuitarString("E3"));
+	fretboard.strings.push(new GuitarString("E4"));
+	fretboard.strings.push(new GuitarString("B3"));
+	fretboard.strings.push(new GuitarString("G3"));
+	fretboard.strings.push(new GuitarString("D3"));
+	fretboard.strings.push(new GuitarString("A2"));
+	fretboard.strings.push(new GuitarString("E2"));
 	
 	/*for(var s=0;s<fretboard.strings.length;s++){
 		song.tabs.push(..);
@@ -582,19 +627,31 @@ $(function(){
 		}else{
 			
 			if(playingNotes[key])return;//prevent repeat
-			var playNote = song.notes[song.pos];
-			if(!playNote)return;
+			var play = song.notes[song.pos];
+			if(!play)return;
 			
-			playingNotes[key] = playNote;
+			var chord = play.length ? play : [play];
+			
+			playingNotes[key] = chord;
 			song.pos = (song.pos+1) % song.notes.length;
 			
-			var iid = setInterval(function(){
-				fretboard.strings[playNote.s].play(playNote.f,0);
-			});
+			for(var i=0;i<chord.length;i++){
+				fretboard.strings[chord[i].s].play(chord[i].f,0);
+			}
+			
+			/*var iid = setInterval(function(){
+				if(play.length){
+					for(var i=0;i<play.length;i++){
+						fretboard.strings[play[i].s].play(play[i].f,0);
+					}
+				}else{
+					fretboard.strings[play.s].play(play.f,0);
+				}
+			});*/
 			$$.on("keyup",function(e){
 				if(e.keyCode == key){
 					delete playingNotes[key];
-					clearInterval(iid);
+					//clearInterval(iid);
 				}
 			});
 			
