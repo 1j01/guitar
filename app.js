@@ -16,20 +16,26 @@ song.clear();
 var interpretTabs = function(str){
 	
 	var noteStrings = {E:"",A:"",D:"",G:"",B:"",e:""};
+	var tuning = "eBGDAE";
 	
 	//find sections of lines prefixed by string names
 		//(minimum of one dash in each line)
-	var EBGDAE = /E([^\n]*-[^\n]*)\nB([^\n]*-[^\n]*)\nG([^\n]*-[^\n]*)\nD([^\n]*-[^\n]*)\nA([^\n]*-[^\n]*)\nE([^\n]*-[^\n])*/gim;
+	var EBGDAE = /E([^\n]*-[^\n]*)\nB([^\n]*-[^\n]*)\nG([^\n]*-[^\n]*)\nD([^\n]*-[^\n]*)\nA([^\n]*-[^\n]*)\nE([^\n]*-[^\n]*)/gim;
 	str.replace(EBGDAE, function(block){
-		console.log("EBGDAE block found:\n",block);
+		console.log("EBGDAE block found:\n"+block);
 		var lines = block.split("\n");
+		var ll = lines[0].length;
 		for(var i=0;i<lines.length;i++){
+			if(ll != lines[i].length){
+				
+			}
 			var m = lines[i].match(/^\s*(\w)\s*(.*)$/);
 			var stringName = m[1].toUpperCase();
 			var someNotes = m[2].trim();
 			if(stringName === "E" && i===0){
 				stringName = "e";
 			}
+			console.log(noteStrings[stringName], someNotes);
 			noteStrings[stringName] += someNotes; // STRING the notes together HAHAHAHAHAHAHAHA Uh
 		}
 		return "{...}";
@@ -66,7 +72,7 @@ var interpretTabs = function(str){
 		//(minimum of three dashes in each line)
 		var NamelessBlock = /(([^\n]*-[^\n]*-[^\n]*-[^\n]*)\n){5}([^\n]*-[^\n]*-[^\n]*-[^\n]*)*/gim;
 		str.replace(NamelessBlock, function(block){
-			console.log("block found with no string names:\n",block);
+			console.log("block found with no string names:\n"+block);
 			var lines = block.split("\n");
 			for(var i=0;i<lines.length;i++){
 				var someNotes = lines[i].trim();
@@ -101,10 +107,11 @@ var interpretTabs = function(str){
 	
 	//console.log(noteStrings.e+"\n"+noteStrings.B+"\n"+noteStrings.G+"\n"+noteStrings.D+"\n"+noteStrings.A+"\n"+noteStrings.E);
 	
-	//@TODO: address ambiguity (-12- = 1,2 or 12)
 	var notes = [];
 	
-	if(false){
+	//address ambiguity (---12--- = 1,2 or 12)
+	var certainlySquishy = !!str.match(/[03-9]\d[^\n*]-/);
+	if(certainlySquishy){
 		//ASSUME --12-- = one two
 		var pos = 0, cont = true;
 		while(cont){
@@ -116,7 +123,7 @@ var interpretTabs = function(str){
 					if(ch.match(/\d/)){
 						notes.push({
 							f: +ch,
-							s: "eBGDAE".indexOf(s)
+							s: tuning.indexOf(s)
 						});
 					}
 				}
@@ -149,19 +156,19 @@ var interpretTabs = function(str){
 							if(isProbablyMultiDigit){
 								chord.push({
 									f: Number(ch+ch2),
-									s: "eBGDAE".indexOf(s)
+									s: tuning.indexOf(s)
 								});
 								pos++;
 							}else{
 								chord.push({
 									f: +(ch),
-									s: "eBGDAE".indexOf(s)
+									s: tuning.indexOf(s)
 								});
 							}
 						}else{
 							chord.push({
 								f: +(ch),
-								s: "eBGDAE".indexOf(s)
+								s: tuning.indexOf(s)
 							});
 						}
 					}
@@ -187,6 +194,15 @@ var interpretTabs = function(str){
 	
 	if(notes.length === 0){
 		return "No notes?!?!?!?!?!?? >:(";
+	}
+	
+	for(var s in noteStrings){
+		console.log(s,song.tabs.indexOf(s));
+		if(~song.tabs.indexOf(s)){
+			song.tabs[tuning.indexOf(s)] += noteStrings[s];
+		}else{
+			console.log("UUHUHHH :/");
+		}
 	}
 	
 	return notes;
@@ -270,9 +286,9 @@ $(function(){
 	//var slap = new SlapbackDelay();
 	
 	var drive = new tuna.Overdrive({
-		outputGain: 0.5,         //0 to 1+
+		outputGain: 0.1,         //0 to 1+
 		drive: 0.7,              //0 to 1
-		curveAmount: 1,          //0 to 1
+		curveAmount: 0.5,          //0 to 1
 		algorithmIndex: 0,       //[0,1,2,3,4,5]
 		bypass: 0
 	});
@@ -355,22 +371,30 @@ $(function(){
 		osc.connect(volume);
 		osc.start(0);
 		
+		var attack = 0.05;
 		this.play = function(fret, bend){
 			var noten = basenoten + fret;
-			osc.frequency.value = getFrequency(noten) + bend;
-			osc.frequency.value += 5;
-			setInterval(function(){
-			},100);
-			volume.gain.value = 1.0;
+			//osc.frequency.value = getFrequency(noten) + bend;
+			//volume.gain.value = 1.0;
+			var now = actx.currentTime;
+			osc.frequency.exponentialRampToValueAtTime(getFrequency(noten) + bend, now);
+			volume.gain.cancelScheduledValues(now);
+			volume.gain.linearRampToValueAtTime(1.000,now+attack);
+			volume.gain.linearRampToValueAtTime(0.050,now+attack+0.30);
+			volume.gain.linearRampToValueAtTime(0.004,now+attack+1.00);
+			volume.gain.linearRampToValueAtTime(0.000,now+attack+4.00);
 			return noten;
 		};
 		this.stop = function(){
 			volume.gain.value = 0.0;
+			var now = actx.currentTime;
+			volume.gain.cancelScheduledValues(now);
+			volume.gain.linearRampToValueAtTime(0.0,now+0.01);
 		};
 		this.step = function(){
 			//if(volume.gain.value>0.02){
-				volume.gain.value *= 0.7;
-				osc.frequency.value -= 0.001;
+				//volume.gain.value *= 0.7;
+				//osc.frequency.value -= 0.001;
 			//}else{
 			//	volume.gain.value *= 0.9;
 			//}
