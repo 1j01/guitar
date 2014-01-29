@@ -286,26 +286,20 @@ $(function(){
 	//var slap = new SlapbackDelay();
 	
 	var drive = new tuna.Overdrive({
-		outputGain: 0.1,         //0 to 1+
-		drive: 0.7,              //0 to 1
-		curveAmount: 0.5,          //0 to 1
-		algorithmIndex: 0,       //[0,1,2,3,4,5]
-		bypass: 0
+		outputGain: 0.0,         //0 to 1+
+		drive: 0.0,              //0 to 1
+		curveAmount: 0.1,          //0 to 1
+		algorithmIndex: 5,       //[0,1,2,3,4,5]
+		bypass: 1
 	});
-	/*var wahwah = new tuna.WahWah({
+	var wahwah = new tuna.WahWah({
 		automode: true,                //true/false
 		baseFrequency: 0.5,            //0 to 1
 		excursionOctaves: 5,           //1 to 6
-		sweep: 0.2,                    //0 to 1
+		sweep: 0.7,                    //0 to 1
 		resonance: 100,                 //1 to 100
 		sensitivity: 0.5,              //-1 to 1
-		bypass: 0
-	});
-	var tremolo = new tuna.Tremolo({
-		intensity: 1,    //0 to 1
-		rate: 0.01,         //0.001 to 8
-		stereoPhase: 50,    //0 to 180
-		bypass: 0
+		bypass: 1
 	});
 	var phaser = new tuna.Phaser({
 		rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
@@ -313,6 +307,12 @@ $(function(){
 		feedback: 0.2,                 //0 to 1+
 		stereoPhase: 30,               //0 to 180
 		baseModulationFrequency: 700,  //500 to 1500
+		bypass: 1
+	});
+	/*var tremolo = new tuna.Tremolo({
+		intensity: 1,    //0 to 1
+		rate: 0.01,         //0.001 to 8
+		stereoPhase: 50,    //0 to 180
 		bypass: 0
 	});
 	/*var convolver = new tuna.Convolver({
@@ -324,12 +324,14 @@ $(function(){
 		impulse: "impulses/impulse_guitar.wav",    //the path to your impulse response
 		bypass: 0
 	});*/
-	pre.connect(drive.input);
-	//tremolo.connect(phaser.input);
-	//phaser.connect(drive.input);
-	drive.connect(post);
+	pre.connect(wahwah.input);
+	wahwah.connect(drive.input);
+	drive.connect(phaser.input);
+	phaser.connect(post);
 	post.connect(actx.destination);
 	
+	var pow = Math.pow, sin = Math.sin, cos = Math.cos, pi = Math.PI, tau=2*pi;
+	var sustain = false;
 	var GuitarString = function(notestr){
 		this.text = notestr[0];
 		var basenoten = getNoteN(notestr);
@@ -349,18 +351,24 @@ $(function(){
 		|   3  | Triangle wave |
 		\*--------------------*/
 		osc.type = 3;
-		/*var curveLength = 100;
+		//ignore the above, use a wavetable instead
+		var curveLength = 10;
 		var curve1 = new Float32Array(curveLength);
 		var curve2 = new Float32Array(curveLength);
-		for (var i = 0; i < curveLength; i++)
-			curve1[i] = Math.sin(Math.PI * i / curveLength);
-		 
-		for (var i = 0; i < curveLength; i++)
-			curve2[i] = Math.cos(Math.PI * i / curveLength);
-		 
-		var waveTable = actx.createWaveTable(curve1, curve2);
-		osc.type = 4;
-		osc.setWaveTable(waveTable);*/
+		var f = 1;//"frequency" ...
+		for(var i = 0; i < curveLength; i++){
+			//curve2[i] = Math.cos(Math.PI * i / curveLength/20);
+			//curve1[i] = Math.sin(Math.PI * i / curveLength/20);
+			var t = i/10;
+			curve1[i] = pow(sin( 1.26*f/2 * tau*t ),15)*pow((1-t),3) * pow(sin( 1.26*f/10 * tau*t ),3)*10;
+			curve1[i] = pow(sin( 1.26*f/2 * tau*t ),15)*pow((1-t),3) * pow(sin( 1.26*f/10 * tau*t ),3)*10;
+		}
+		
+		//var waveTable = actx.createWaveTable(curve1, curve2);
+		//osc.setWaveTable(waveTable);
+		var waveTable = actx.createPeriodicWave(curve1, curve2);
+		osc.setPeriodicWave(waveTable);
+		
 	
 	
 		/* connections */
@@ -372,40 +380,54 @@ $(function(){
 		osc.start(0);
 		
 		var attack = 0.05;
-		this.play = function(fret, bend){
-			var noten = basenoten + fret;
-			//osc.frequency.value = getFrequency(noten) + bend;
-			//volume.gain.value = 1.0;
+		this.freq = basefreq;
+		this.fret = 0;
+		this.play = function(fret){
+			var noten = basenoten + (this.fret = fret);
 			var now = actx.currentTime;
-			osc.frequency.exponentialRampToValueAtTime(getFrequency(noten) + bend, now);
+			this.freq = getFrequency(noten);
+			osc.frequency.exponentialRampToValueAtTime(this.freq, now);
 			volume.gain.cancelScheduledValues(now);
 			volume.gain.linearRampToValueAtTime(1.000,now+attack);
-			volume.gain.linearRampToValueAtTime(0.050,now+attack+0.30);
-			volume.gain.linearRampToValueAtTime(0.004,now+attack+1.00);
+			//volume.gain.linearRampToValueAtTime(0.050,now+attack+0.30);
+			//volume.gain.linearRampToValueAtTime(0.004,now+attack+1.00);
 			volume.gain.linearRampToValueAtTime(0.000,now+attack+4.00);
 			return noten;
 		};
-		this.stop = function(){
-			volume.gain.value = 0.0;
+		this.bend = function(bend){
+			var noten = basenoten + this.fret;
+			var now = actx.currentTime;
+			this.freq = getFrequency(noten) + bend;
+			osc.frequency.exponentialRampToValueAtTime(this.freq, now);
+			return noten;
+		};
+		this.release = function(){
 			var now = actx.currentTime;
 			volume.gain.cancelScheduledValues(now);
-			volume.gain.linearRampToValueAtTime(0.0,now+0.01);
+			volume.gain.linearRampToValueAtTime(0.0,now+0.33+(sustain*1));
 		};
-		this.step = function(){
-			//if(volume.gain.value>0.02){
-				//volume.gain.value *= 0.7;
-				//osc.frequency.value -= 0.001;
-			//}else{
-			//	volume.gain.value *= 0.9;
-			//}
+		this.stop = function(){
+			var now = actx.currentTime;
+			volume.gain.cancelScheduledValues(now);
+			volume.gain.linearRampToValueAtTime(0.0,now+0.5);
+			osc.frequency.linearRampToValueAtTime(this.freq/50, now+0.4);
 		};
-	
 	};
+	
+	//Open Strings area Width (left of the fretboard)
+	var OSW = 60;
+	
 	var mouseX = 0;
 	var mouseY = 0;
 	var mouseDown = false;
 	var mouseOpen = false;//override mouseFret to -1 (OPEN)
 	var mouseBend = false;
+	
+	var mouseFret = 0;// 0 = open string
+	var mouseFretX = 0;
+	var mouseFretW = -OSW*1.8;
+	var mouseString = 0;
+	var mouseStringY = 0;
 	
 	var line = function(x1,y1,x2,y2,ss,w){
 		if(w)ctx.strokeStyle = ss;
@@ -417,14 +439,14 @@ $(function(){
 	};
 	
 	var fretboard = {
-		x: 60,
+		x: OSW,
 		y: 60,
 		w: 1552,
 		h: 300,
 		num_frets: 40,
 		scale: 1716,
 		strings: [],
-		//inlays: [0,0,0,0,1,0,1,0,0,1,0,1,90,0,0,0,0,0,0,0,0,0,0,0,3],//le aucoustic guit'r s'tt'n to m'h left
+		//inlays: [0,0,0,0,1,0,1,0,0,1,0,1,190,0,0,0,0,0,0,0,0,0,0,0,3],//<--
 		inlays: [0,0,1,0,1,0,1,0,1,0,0,2,0,0,1,0,1,0,1,0,1,0,0,2],//most common
 		//inlays: [0,0,1,0,1,0,1,0,0,1,0,2,0,0,1,0,1,0,1,0,0,1,0,2],//less common
 		draw: function(ctx){
@@ -433,8 +455,11 @@ $(function(){
 			var mX = mouseX - this.x;
 			var mY = mouseY - this.y;
 			
-			
-			var OSW = this.x;//Open Strings area Width
+			if(!mouseBend){
+				mouseFret = 0;//= OPEN;
+				mouseFretX = 0;
+				mouseFretW = -OSW*1.8;
+			}
 			
 			//draw board
 			ctx.fillStyle = "#FFF7B2";
@@ -448,9 +473,6 @@ $(function(){
 			var mouseOverFB = ctx.isPointInPath(mouseX, mouseY);
 			
 			//draw frets
-			var mouseFret = 0;//= OPEN;
-			var mouseFretX = 0;
-			var mouseFretW = -OSW*1.8;
 			
 			var fretXs = [mouseFretX];
 			var fretWs = [mouseFretW];
@@ -458,7 +480,7 @@ $(function(){
 				x += (this.scale - x) / 17.817;
 				var mx = (x+xp)/2;
 				
-				if(!mouseOpen && mX < x && mX >= xp){
+				if(!mouseBend && !mouseOpen && mX < x && mX >= xp){
 					mouseFret = fret;
 					mouseFretX = x;
 					mouseFretW = xp-x;
@@ -473,7 +495,7 @@ $(function(){
 				for(var i=0, ni=this.inlays[fret-1]; i<ni; i++){
 					//i for inlay of course
 					ctx.beginPath();
-					ctx.arc(mx,(i+1/2)/ni*this.h,7,0,Math.PI*2,false);
+					ctx.arc(mx,(i+1/2)/ni*this.h,7,0,tau,false);
 					ctx.fill();
 					//ctx.fillRect(mx, Math.random()*this.h,5,5);
 				}
@@ -482,8 +504,10 @@ $(function(){
 			}
 			//draw strings
 			var sh = this.h/this.strings.length;
-			var mouseString = Math.floor(mY/sh);
-			var mouseStringY = (mouseString+1/2) * sh;
+			if(!mouseBend){//(don't switch strings while bending)
+				mouseString = Math.floor(mY/sh);
+				mouseStringY = (mouseString+1/2) * sh;
+			}
 			for(var s=0;s<this.strings.length;s++){
 				var str = this.strings[s];
 				var sy = (s+1/2)*sh;
@@ -506,7 +530,6 @@ $(function(){
 				ctx.fillStyle = "#000";
 				ctx.fillText(str.text,-OSW/2,sy);
 				
-				str.step();
 			}
 			
 			//console.log(mouseOverFB, mouseFret, mouseString);
@@ -522,19 +545,18 @@ $(function(){
 						};
 						song.notes.push(recNote);
 						
-						var fretName = String(mouseFret);
+						var fretName = ""+mouseFret;
 						var dashes = ["ERROR ;)","-","--","---","----"][fretName.length];
 						for(var s=0; s<song.tabs.length; s++){
 							song.tabs[s] += (s===mouseString) ? fretName : dashes;
 							song.tabs[s] += "-";
 						}
 						
-						this.strings[mouseString].play(
-							mouseFret,
-							(mouseBend) ? Math.abs(mY-mouseStringY)*3 : 0
-						);
+						this.strings[mouseString].play(mouseFret);
 						
 						//console.log(song.tabs.join("\n"));
+					}else if(mouseBend){
+						this.strings[mouseString].bend(Math.abs(mY-mouseStringY));
 					}
 				}else{
 					ctx.fillStyle = "rgba(0,255,0,0.2)";
@@ -551,9 +573,10 @@ $(function(){
 				for(var i in chord){
 					var note = chord[i];
 					var b = 5;
-					ctx.fillStyle = "rgba(0,255,255,0.2)";
 					var y = note.s*sh;
 					var sy = (note.s+1/2)*sh;
+					
+					ctx.fillStyle = "rgba(0,255,255,0.2)";
 					ctx.fillRect(fretXs[note.f]+b,y+b,fretWs[note.f]/*-b*2*/,sh-b-b);
 				
 					line(
@@ -595,7 +618,6 @@ $(function(){
 	$$.on("mousemove", function(e){
 		mouseX = e.offsetX;
 		mouseY = e.offsetY;
-		//render();
 	});
 	$canvas.on("mousedown", function(e){
 		if(e.button === 0){
@@ -610,6 +632,13 @@ $(function(){
 		mouseDown = false;
 		mouseOpen = false;
 		mouseBend = false;
+		//stop strings' rings
+		for(var s=0;s<fretboard.strings.length;s++){
+			fretboard.strings[s].release();
+		}
+		if(e.keyCode === 32){//Spacebar
+			sustain = false;
+		}
 	});
 	$$.on("contextmenu", function(e){
 		e.preventDefault();
@@ -648,6 +677,8 @@ $(function(){
 			}
 		}else if(key === 36){//Home
 			song.pos = 0;
+		}else if(key === 32){//Spacebar
+			sustain = true;
 		}else{
 			
 			if(playingNotes[key])return;//prevent repeat
@@ -659,23 +690,22 @@ $(function(){
 			playingNotes[key] = chord;
 			song.pos = (song.pos+1) % song.notes.length;
 			
+			var PLAYING_ID = Math.random();
 			for(var i=0;i<chord.length;i++){
-				fretboard.strings[chord[i].s].play(chord[i].f,0);
+				var str = fretboard.strings[chord[i].s];
+				str.PLAYING_ID = PLAYING_ID;
+				str.play(chord[i].f);
 			}
 			
-			/*var iid = setInterval(function(){
-				if(play.length){
-					for(var i=0;i<play.length;i++){
-						fretboard.strings[play[i].s].play(play[i].f,0);
-					}
-				}else{
-					fretboard.strings[play.s].play(play.f,0);
-				}
-			});*/
 			$$.on("keyup",function(e){
 				if(e.keyCode == key){
+					for(var i=0;i<chord.length;i++){
+						var str = fretboard.strings[chord[i].s];
+						if(str.PLAYING_ID == PLAYING_ID){
+							str.release();
+						}
+					}
 					delete playingNotes[key];
-					//clearInterval(iid);
 				}
 			});
 			
