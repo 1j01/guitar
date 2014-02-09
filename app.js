@@ -248,34 +248,16 @@ $(function(){
 		
 		return noten;
 	};
-	/** **
-	var SlapbackDelay = function(){
-		//create the nodes we’ll use
-		this.input = actx.createGain();
-		var output = actx.createGain();
-		var delay = actx.createDelay();
-		var feedback = actx.createGain();
-		var wetLevel = actx.createGain();
-	
-		//set some decent values
-		delay.delayTime.value = 0.150; //150 ms delay
-		feedback.gain.value = 0.25;
-		wetLevel.gain.value = 0.15;
-	
-		//set up the routing
-		this.input.connect(delay);
-		this.input.connect(output);
-		delay.connect(feedback);
-		delay.connect(wetLevel);
-		feedback.connect(delay);
-		wetLevel.connect(output);
-	
-		this.connect = function(target){
-			output.connect(target);
-		};
+
+
+	var connect = function(nodes){
+		// <= length - 2!?
+		for(var i=0; i<=nodes.length-2; i++){
+			var n1 = nodes[i], n2 = nodes[i+1];
+			n1.connect(n2.input || n2.destination || n2);
+		}
 	};
-	*/
-	
+
 	/////////////////////////
 	
 	var pre = actx.createGain();
@@ -288,7 +270,7 @@ $(function(){
 	var drive = new tuna.Overdrive({
 		outputGain: 0.0,         //0 to 1+
 		drive: 0.0,              //0 to 1
-		curveAmount: 0.1,          //0 to 1
+		curveAmount: 0.1,        //0 to 1
 		algorithmIndex: 5,       //[0,1,2,3,4,5]
 		bypass: 1
 	});
@@ -297,17 +279,17 @@ $(function(){
 		baseFrequency: 0.5,            //0 to 1
 		excursionOctaves: 5,           //1 to 6
 		sweep: 0.7,                    //0 to 1
-		resonance: 100,                 //1 to 100
+		resonance: 40,                //1 to 100
 		sensitivity: 0.5,              //-1 to 1
 		bypass: 1
 	});
 	var phaser = new tuna.Phaser({
 		rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
 		depth: 0.3,                    //0 to 1
-		feedback: 0.2,                 //0 to 1+
+		feedback: 0.9,                 //0 to 1+
 		stereoPhase: 30,               //0 to 180
 		baseModulationFrequency: 700,  //500 to 1500
-		bypass: 1
+		bypass: 0
 	});
 	/*var tremolo = new tuna.Tremolo({
 		intensity: 1,    //0 to 1
@@ -324,11 +306,12 @@ $(function(){
 		impulse: "impulses/impulse_guitar.wav",    //the path to your impulse response
 		bypass: 0
 	});*/
-	pre.connect(wahwah.input);
+	/*pre.connect(wahwah.input);
 	wahwah.connect(drive.input);
 	drive.connect(phaser.input);
 	phaser.connect(post);
-	post.connect(actx.destination);
+	post.connect(actx.destination);*/
+	connect([ pre, wahwah, drive, phaser, post, actx ]);
 	
 	var pow = Math.pow, sin = Math.sin, cos = Math.cos, pi = Math.PI, tau=2*pi;
 	var sustain = false;
@@ -350,7 +333,8 @@ $(function(){
 		|   2  | Sawtooth wave |
 		|   3  | Triangle wave |
 		\*--------------------*/
-		osc.type = 3;
+		osc.type = 2;
+		/*
 		//ignore the above, use a wavetable instead
 		var curveLength = 10;
 		var curve1 = new Float32Array(curveLength);
@@ -368,7 +352,7 @@ $(function(){
 		//osc.setWaveTable(waveTable);
 		var waveTable = actx.createPeriodicWave(curve1, curve2);
 		osc.setPeriodicWave(waveTable);
-		
+		*/
 	
 	
 		/* connections */
@@ -388,10 +372,10 @@ $(function(){
 			this.freq = getFrequency(noten);
 			osc.frequency.exponentialRampToValueAtTime(this.freq, now);
 			volume.gain.cancelScheduledValues(now);
-			volume.gain.linearRampToValueAtTime(1.000,now+attack);
-			//volume.gain.linearRampToValueAtTime(0.050,now+attack+0.30);
+			volume.gain.exponentialRampToValueAtTime(1.50,now+attack);
+			volume.gain.exponentialRampToValueAtTime(0.50,now+attack+0.29);
 			//volume.gain.linearRampToValueAtTime(0.004,now+attack+1.00);
-			volume.gain.linearRampToValueAtTime(0.000,now+attack+4.00);
+			volume.gain.linearRampToValueAtTime(0.00,now+attack+4.00);
 			return noten;
 		};
 		this.bend = function(bend){
