@@ -271,19 +271,19 @@ $(function(){
 	//var slap = new SlapbackDelay();
 	
 	var drive = new tuna.Overdrive({
-		outputGain: 0.0,         //0 to 1+
-		drive: 0.0,              //0 to 1
-		curveAmount: 0.1,        //0 to 1
-		algorithmIndex: 5,       //[0,1,2,3,4,5]
+		outputGain: 0.5,         //0 to 1+
+		drive: 0.5,              //0 to 1
+		curveAmount: 0.5,        //0 to 1
+		algorithmIndex: 4,       //[0,1,2,3,4,5]
 		bypass: 1
 	});
 	var wahwah = new tuna.WahWah({
-		automode: true,                //true/false
+		automode: false,                //true/false
 		baseFrequency: 0.5,            //0 to 1
-		excursionOctaves: 5,           //1 to 6
-		sweep: 0.7,                    //0 to 1
-		resonance: 40,                //1 to 100
-		sensitivity: 0.5,              //-1 to 1
+		excursionOctaves: 1,           //1 to 6
+		sweep: 0.2,                    //0 to 1
+		resonance: 2,                //1 to 100
+		sensitivity: 0.3,              //-1 to 1
 		bypass: 1
 	});
 	var phaser = new tuna.Phaser({
@@ -292,6 +292,12 @@ $(function(){
 		feedback: 0.9,                 //0 to 1+
 		stereoPhase: 30,               //0 to 180
 		baseModulationFrequency: 700,  //500 to 1500
+		bypass: 0
+	});
+	var chorus = new tuna.Chorus({
+		rate: 1.5,         //0.01 to 8+
+		feedback: 0.2,     //0 to 1+
+		delay: 0.0045,     //0 to 1
 		bypass: 0
 	});
 	/*var tremolo = new tuna.Tremolo({
@@ -309,14 +315,33 @@ $(function(){
 		impulse: "impulses/impulse_guitar.wav",    //the path to your impulse response
 		bypass: 0
 	});*/
-	/*pre.connect(wahwah.input);
-	wahwah.connect(drive.input);
-	drive.connect(phaser.input);
-	phaser.connect(post);
-	post.connect(actx.destination);*/
-	connect([ pre, wahwah, drive, phaser, post, actx ]);
+
+	/*var noiseConvolver = (function(){
+		var convolver = actx.createConvolver(),
+		noiseBuffer = actx.createBuffer(2, 0.5 * actx.sampleRate, actx.sampleRate),
+		left = noiseBuffer.getChannelData(0),
+		right = noiseBuffer.getChannelData(1);
+		for(var i = 0; i < noiseBuffer.length; i++){
+			left[i] = Math.random() * 2 - 1;
+			right[i] = Math.random() * 2 - 1;
+		}
+		convolver.buffer = noiseBuffer;
+		return convolver;
+	})();*/
 	
-	var pow = Math.pow, sin = Math.sin, cos = Math.cos, pi = Math.PI, tau=2*pi;
+	connect([ pre, wahwah, phaser, drive, chorus, post ]);
+	
+	var splitter = actx.createChannelSplitter(2)
+	var merger = actx.createChannelMerger(2);
+	post.connect(splitter);
+	splitter.connect(merger);
+	merger.connect(actx.destination);
+	//var merger = actx.createChannelMerger(2);
+	//post.connect(merger, 0, 0);
+	//post.connect(merger, 0, 1);
+	//merger.connect(actx.destination);
+	
+	var pow = Math.pow, sin = Math.sin, cos = Math.cos, tau=2*Math.PI; Math.PI="useless";
 	var sustain = false;
 	var GuitarString = function(notestr){
 		this.text = notestr[0];
@@ -356,26 +381,20 @@ $(function(){
 		var waveTable = actx.createPeriodicWave(curve1, curve2);
 		osc.setPeriodicWave(waveTable);
 		*/
-	
-	
-		/* connections */
-		/*osc.connect(vol);
-		vol.connect(slap.input);
-		slap.connect(actx.destination);*/
 		
 		osc.connect(volume);
 		osc.start(0);
 		
-		var attack = 0.05;
+		var attack = 0.0;//this attack doesn't work, just makes it slow. @TODO
 		this.freq = basefreq;
 		this.fret = 0;
 		this.play = function(fret){
 			var noten = basenoten + (this.fret = fret);
 			var now = actx.currentTime;
 			this.freq = getFrequency(noten);
-			osc.frequency.exponentialRampToValueAtTime(this.freq, now);
+			osc.frequency.exponentialRampToValueAtTime(this.freq, now+0.001);
 			volume.gain.cancelScheduledValues(now);
-			volume.gain.exponentialRampToValueAtTime(1.50,now+attack);
+			volume.gain.linearRampToValueAtTime(1.50,now+attack);
 			volume.gain.exponentialRampToValueAtTime(0.50,now+attack+0.29);
 			//volume.gain.linearRampToValueAtTime(0.004,now+attack+1.00);
 			volume.gain.linearRampToValueAtTime(0.00,now+attack+4.00);
@@ -385,7 +404,7 @@ $(function(){
 			var noten = basenoten + this.fret;
 			var now = actx.currentTime;
 			this.freq = getFrequency(noten) + bend;
-			osc.frequency.exponentialRampToValueAtTime(this.freq, now);
+			osc.frequency.linearRampToValueAtTime(this.freq, now);
 			return noten;
 		};
 		this.release = function(){
