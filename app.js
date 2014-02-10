@@ -65,6 +65,9 @@ var interpretTabs = function(str){
 			}
 			return "{....}";
 		});
+		if(noteStrings.B.length > 0){
+			alert("Playing blocks of music that don't look like the right tuning. (Alternate tunings aren't supported.)");
+		}
 	}
 	
 	//fallback for blocks that have no string names
