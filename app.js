@@ -642,7 +642,7 @@ $(function(){
 		console.log(key);
 		if(key === 27){//Escape
 			if($textarea.is(":hidden")){
-				$textarea.val(song.tabs.join("\n")).show();
+				$textarea.val(song.tabs.join("\n")).show().select();
 			}else{
 				if($textarea.value !== song.tabs.join("\n")){
 					if($textarea.val().match(/\[!\]/)){
