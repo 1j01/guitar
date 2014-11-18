@@ -272,10 +272,10 @@ $(function(){
 	
 	var drive = new tuna.Overdrive({
 		outputGain: 0.5,         //0 to 1+
-		drive: 0.5,              //0 to 1
-		curveAmount: 0.5,        //0 to 1
-		algorithmIndex: 4,       //[0,1,2,3,4,5]
-		bypass: 1
+		drive: 0.7,              //0 to 1
+		curveAmount: 1,          //0 to 1
+		algorithmIndex: 0,       //0 to 5, selects one of our drive algorithms
+		bypass: 0
 	});
 	var wahwah = new tuna.WahWah({
 		automode: false,                //true/false
@@ -284,7 +284,7 @@ $(function(){
 		sweep: 0.2,                    //0 to 1
 		resonance: 2,                //1 to 100
 		sensitivity: 0.3,              //-1 to 1
-		bypass: 1
+		bypass: 0
 	});
 	var phaser = new tuna.Phaser({
 		rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
@@ -330,7 +330,7 @@ $(function(){
 	})();*/
 	
 	//connect([ pre, wahwah, phaser, drive, chorus, post ]);
-	connect([ pre, wahwah, drive, chorus, post ]);
+	connect([ pre, wahwah, chorus, post ]);
 	
 	var splitter = actx.createChannelSplitter(2)
 	var merger = actx.createChannelMerger(2);
@@ -355,33 +355,25 @@ $(function(){
 		
 		var osc = actx.createOscillator();
 		osc.frequency.value = basefreq;
-		/*--------------------*\
-		|_Type_|_Waveform______|
-		|   0  | Sine wave     |
-		|   1  | Square wave   |
-		|   2  | Sawtooth wave |
-		|   3  | Triangle wave |
-		\*--------------------*/
-		osc.type = 2;
-		/*
-		//ignore the above, use a wavetable instead
+		osc.type = "custom"; // sine, square, sawtooth, triangle, custom
+		
+		// ignore the above, use a custom wavetable instead
 		var curveLength = 10;
 		var curve1 = new Float32Array(curveLength);
 		var curve2 = new Float32Array(curveLength);
 		var f = 1;//"frequency" ...
 		for(var i = 0; i < curveLength; i++){
-			//curve2[i] = Math.cos(Math.PI * i / curveLength/20);
-			//curve1[i] = Math.sin(Math.PI * i / curveLength/20);
-			var t = i/10;
-			curve1[i] = pow(sin( 1.26*f/2 * tau*t ),15)*pow((1-t),3) * pow(sin( 1.26*f/10 * tau*t ),3)*10;
-			curve1[i] = pow(sin( 1.26*f/2 * tau*t ),15)*pow((1-t),3) * pow(sin( 1.26*f/10 * tau*t ),3)*10;
+			curve2[i] = Math.cos(Math.PI * i / curveLength/20);
+			curve1[i] = Math.sin(Math.PI * i / curveLength/20);
+			//var t = i/10;
+			//curve1[i] = pow(sin( 1.26*f/2 * tau*t ),15)*pow((1-t),3) * pow(sin( 1.26*f/10 * tau*t ),3)*10;
+			//curve1[i] = pow(sin( 1.26*f/2 * tau*t ),15)*pow((1-t),3) * pow(sin( 1.26*f/10 * tau*t ),3)*10;
 		}
 		
 		//var waveTable = actx.createWaveTable(curve1, curve2);
 		//osc.setWaveTable(waveTable);
 		var waveTable = actx.createPeriodicWave(curve1, curve2);
 		osc.setPeriodicWave(waveTable);
-		*/
 		
 		osc.connect(volume);
 		osc.start(0);
