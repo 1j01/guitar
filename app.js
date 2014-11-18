@@ -614,12 +614,12 @@ $(function(){
 
 	var $$ = $(window);
 
-	$$.on("mousemove", function(e){
+	$$.on("mousemove mousedown", function(e){
 		mouseX = e.offsetX;
 		mouseY = e.offsetY;
 	});
 	$canvas.on("mousedown", function(e){
-		if(e.button === 0){
+		if(e.button === 2){
 			mouseOpen = true;
 		}
 		if(e.button === 1){
