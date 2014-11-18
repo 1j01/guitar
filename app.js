@@ -329,7 +329,8 @@ $(function(){
 		return convolver;
 	})();*/
 	
-	connect([ pre, wahwah, phaser, drive, chorus, post ]);
+	//connect([ pre, wahwah, phaser, drive, chorus, post ]);
+	connect([ pre, wahwah, drive, chorus, post ]);
 	
 	var splitter = actx.createChannelSplitter(2)
 	var merger = actx.createChannelMerger(2);
