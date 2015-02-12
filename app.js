@@ -8,7 +8,10 @@ var song = {
 	},
 	toJSON: function(){ //not used
 		return this.notes; //ever
-	}
+	},
+	toString: function(){
+		return song.tabs.join("\n");
+	},
 };
 song.clear();
 //{notes:[],tabs:["E ","B ","G ","D ","A ","E "],pos:0};
@@ -27,7 +30,7 @@ var interpretTabs = function(str){
 		var ll = lines[0].length;
 		for(var i=0;i<lines.length;i++){
 			if(ll != lines[i].length){
-				
+				// @TODO
 			}
 			var m = lines[i].match(/^\s*(\w)\s*(.*)$/);
 			var stringName = m[1].toUpperCase();
@@ -79,7 +82,7 @@ var interpretTabs = function(str){
 			var lines = block.split("\n");
 			for(var i=0;i<lines.length;i++){
 				var someNotes = lines[i].trim();
-				noteStrings["eBGDAE"[i]] += "+"+someNotes; // STRING the notes together HAHAHAHAHAHAHAHA Uh
+				noteStrings["eBGDAE"[i]] += "+" + someNotes; // STRING the notes together HAHAHAHAHAHAHAHA um
 			}
 			return "{.....}";
 		});
@@ -103,7 +106,8 @@ var interpretTabs = function(str){
 				+noteStrings.D+tt123
 				+noteStrings.A+tt123
 				+noteStrings.E+tt123
-				+"\n\n(Any music blocks found were/are merged together like above.)";
+				+"\n\n(Any music blocks found were merged together above.)";
+				// @TODO: show individual blocks that were uneven instead of the concat'd block
 		}
 	}
 	
@@ -217,10 +221,10 @@ $(function(){
 	var recNote = null;
 	var playingNotes = {};
 	
-	var $canvas = $("<canvas/>").appendTo("body");
+	var $canvas = $("<canvas tabindex=0/>").appendTo("body");
 	var canvas = $canvas[0];
 	
-	var $textarea = $("<textarea/>").appendTo("body").hide();
+	var $textarea = $("<textarea tabindex=1 autofocus/>").appendTo("body");
 	
 	
 	var ctx = canvas.getContext("2d");
@@ -440,7 +444,7 @@ $(function(){
 	var fretboard = {
 		x: OSW,
 		y: 60,
-		w: 1552,
+		w: 31337,
 		h: 300,
 		num_frets: 40,
 		scale: 1716,
@@ -510,7 +514,7 @@ $(function(){
 			for(var s=0;s<this.strings.length;s++){
 				var str = this.strings[s];
 				var sy = (s+1/2)*sh;
-	
+				
 				if(mouseOverFB && s==mouseString){
 					if(mouseDown && mouseBend){
 						line(0,sy,mouseFretX,mY,"#555",s/3+1);
@@ -550,6 +554,8 @@ $(function(){
 							song.tabs[s] += (s===mouseString) ? fretName : dashes;
 							song.tabs[s] += "-";
 						}
+						$textarea.val(song);
+						$textarea[0].scrollLeft = $textarea[0].scrollWidth;
 						
 						this.strings[mouseString].play(mouseFret);
 						
@@ -613,10 +619,15 @@ $(function(){
 	
 
 	var $$ = $(window);
-
+	
+	var prevent = function(e){
+		e.preventDefault();
+	};
+	
 	$$.on("mousemove mousedown", function(e){
-		mouseX = e.offsetX;
-		mouseY = e.offsetY;
+		var offset = $canvas.offset();
+		mouseX = e.pageX - offset.left;
+		mouseY = e.pageY - offset.top;
 	});
 	$canvas.on("mousedown", function(e){
 		if(e.button === 2){
@@ -626,8 +637,10 @@ $(function(){
 			mouseBend = true;
 		}
 		mouseDown = true;
+		$$.on("mousemove", prevent); // make it so you don't select text in the textarea when dragging from the canvas
 	});
-	$$.on("mouseup", function(e){
+	$$.on("mouseup blur", function(e){
+		$$.off("mousemove", prevent); // but let you drag other times
 		mouseDown = false;
 		mouseOpen = false;
 		mouseBend = false;
@@ -639,46 +652,29 @@ $(function(){
 			sustain = false;
 		}
 	});
-	$$.on("contextmenu", function(e){
+	$canvas.on("contextmenu", function(e){
 		e.preventDefault();
 		return false;
 	});
-
+	
 	$$.on("keydown", function(e){
 		var key = e.keyCode;
+		
+		console.log(key);
+		
+		if(e.keyCode === 17){ // Ctrl
+			$textarea.focus(); // just so Ctrl+A works outside the textarea
+		}
 		
 		if(e.ctrlKey || e.shiftKey || e.altKey || key > 100){
 			return;
 		}
 		
-		console.log(key);
-		if(key === 27){//Escape
-			if($textarea.is(":hidden")){
-				$textarea.val(song.tabs.join("\n")).show().select();
-			}else{
-				if($textarea.value !== song.tabs.join("\n")){
-					if($textarea.val().match(/\[!\]/)){
-						$textarea.hide();
-					}else{
-						var res = interpretTabs($textarea.val());
-						if(typeof res == "string"){
-							$textarea.val("[!] "+res).select();
-						}else{
-							song.clear();
-							song.notes = res;
-							$textarea.hide();
-						}
-					}
-				}else{
-					$textarea.hide();
-				}
-				window.getSelection().removeAllRanges();
-			}
-		}else if(key === 36){//Home
+		if(key === 36){//Home
 			song.pos = 0;
 		}else if(key === 32){//Spacebar
 			sustain = true;
-		}else{
+		}else if(!e.target.tagName.match(/textarea|input/i)){
 			
 			if(playingNotes[key])return;//prevent repeat
 			var play = song.notes[song.pos];
@@ -716,11 +712,28 @@ $(function(){
 		}
 	});
 	
+	$textarea.on("change", function(){
+		var text = $textarea.val();
+		if(text !== song.toString()){
+			var res = interpretTabs(text);
+			if(typeof res == "string"){
+				$textarea.val("[!] "+res).select();
+			}else{
+				song.clear();
+				song.notes = res;
+				$textarea.val(song);
+			}
+		}
+	})
+	
 	var resize = function(){
-		canvas.width = innerWidth;
-		canvas.height = innerHeight;
+		canvas.width = document.body.clientWidth; //window.innerWidth;
+		canvas.height = fretboard.h + fretboard.y*2; //window.innerHeight;
 	};
 	$$.on("resize", resize);
 	resize();
 
 });
+
+// @TODO: mobile support
+
