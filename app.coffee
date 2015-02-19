@@ -2,10 +2,11 @@
 {abs, sin, cos} = Math
 tau = 2*Math.PI
 
+# @TODO: different tunings?
+
 song =
 	clear: ->
 		@notes = []
-		# @tuning = "EBGDAE"
 		@tabs = ["E|","B|","G|","D|","A|","E|"]
 		@pos = 0
 	
@@ -127,10 +128,10 @@ interpretTabs = (str)->
 	
 	notes = []
 	
-	# address ambiguity (---12--- = 1,2 or 12)
+	# address ambiguity (---12--- = "one, two" or "twelve")
 	certainlySquishy = not not str.match /[03-9]\d[^\n*]-/
 	if certainlySquishy
-		# ASSUME --12-- = one two
+		# ASSUME --12-- means "one, two"
 		pos = 0
 		cont = yes
 		while cont
@@ -147,7 +148,7 @@ interpretTabs = (str)->
 			pos++
 	
 	else
-		# ASSUME --12-- = twelve
+		# ASSUME --12-- means a note on the twelth fret
 		# also, group chords[]
 		pos = 0
 		cont = yes
@@ -162,16 +163,6 @@ interpretTabs = (str)->
 					if ch.match /\d/
 						if ch2?.match /\d/
 							isProbablyMultiDigit = yes
-							### old js
-							for _s, _noteString of noteStrings
-								if (_noteString[pos+1] and # when a note starts on the supposed second "digit"
-								not noteString[pos+1]) # it can't be a second digit (or someone's absolutely horrible at writing guitar tabs)
-									# wait, this just checks if there's a digit in another row
-									# this wouldn't work would it
-									isProbablyMultiDigit = no # don't mess up
-									console.log("@ is uncommon, however. ", ch,ch2)
-									break
-							###
 							if isProbablyMultiDigit
 								chord.push
 									f: parseInt(ch+ch2)
@@ -187,17 +178,6 @@ interpretTabs = (str)->
 							chord.push
 								f: parseInt(ch)
 								s: tuning.indexOf(s)
-				
-				### old js
-				if note
-					if note_or_chord
-						if typeof note_or_chord === "array" # warning: typeof new Array() === "object"
-							node_or_chord.push(note)
-						else
-							node_or_chord
-					else
-						note_or_chord = note
-				###
 			
 			if chord.length > 0
 				notes.push(chord)
@@ -239,30 +219,21 @@ $ ->
 	
 	getNoteN = (notestr)->
 		notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
-		octave = Number(notestr.charAt(if notestr.length is 3 then 2 else 1))
-		noten = notes.indexOf(notestr.slice(0, -1))
-		if noten < 3
-			noten += ((octave) * 12) + 1 
-		else
-			noten += ((octave - 1) * 12) + 1 
-		noten
-
-
+		octave = Number notestr[-1..]
+		noten = notes.indexOf notestr[0...-1]
+		octave -= 1 if noten >= 3
+		noten += octave * 12 + 1
+	
 	connect = (nodes...)->
-		# <= length - 2!?
-		i=0
-		while i <= nodes.length-2
-			n1 = nodes[i]
-			n2 = nodes[i+1]
-			n1.connect n2.input ? n2.destination ? n2
-			i++
+		for node, i in nodes when next = nodes[i+1]
+			node.connect next.input ? next.destination ? next
 	
 	# # # # # # # # # # # #
 	
 	pre = actx.createGain()
-	pre.gain.value = 0.2# guitar volume
+	pre.gain.value = 0.2 # guitar volume
 	post = actx.createGain()
-	post.gain.value = 0.3# master volume
+	post.gain.value = 0.3 # master volume
 	
 	# slap = new SlapbackDelay()
 	
@@ -358,7 +329,7 @@ $ ->
 			@osc.frequency.value = @basefreq
 			@osc.type = "custom" # sine, square, sawtooth, triangle, custom
 			
-			# ignore the above osc.type, use a custom wavetable instead
+			# let's make a custom wavetable...
 			curveLength = 10
 			curve1 = new Float32Array(curveLength)
 			curve2 = new Float32Array(curveLength)
@@ -403,8 +374,6 @@ $ ->
 		
 		release: ->
 			now = actx.currentTime
-			## all this does is awkwardly reassert the volume (especially apparent with sustain)
-			## @volume.gain.cancelScheduledValues(now)
 			@volume.gain.linearRampToValueAtTime(0.0,now+0.33+(sustain*1))
 		
 		stop: ->
@@ -532,9 +501,7 @@ $ ->
 			if mouseOverFB and 0 <= mouseString < @strings.length
 				if mouseDown
 					ctx.fillStyle = "rgba(0,255,0,0.5)"
-					if (not recNote or
-					recNote.f isnt mouseFret or
-					recNote.s isnt mouseString)
+					unless recNote?.f is mouseFret and recNote?.s is mouseString
 						recNote =
 							s: mouseString
 							f: mouseFret
@@ -588,10 +555,6 @@ $ ->
 	fretboard.strings.push new GuitarString "A2"
 	fretboard.strings.push new GuitarString "E2"
 	
-	###for(s=0s<fretboard.strings.lengths++){
-		song.tabs.push(..)
-	}###
-	
 	render = ->
 		ctx.clearRect(0,0,canvas.width,canvas.height)
 		fretboard.draw(ctx)
@@ -626,9 +589,7 @@ $ ->
 		mouseDown = off
 		mouseOpen = off
 		mouseBend = off
-		
-		for string in fretboard.strings
-			string.release()
+		string.release() for string in fretboard.strings
 	
 	$canvas.on "contextmenu", prevent
 	
