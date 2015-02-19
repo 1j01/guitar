@@ -405,6 +405,7 @@ $ ->
 			now = actx.currentTime
 			@volume.gain.cancelScheduledValues(now)
 			@volume.gain.linearRampToValueAtTime(0.0,now+0.33+(sustain*1))
+			# @FIXME awkward reassertion of the volume (especially apparent with sustain)
 		
 		stop: ->
 			now = actx.currentTime
@@ -626,14 +627,16 @@ $ ->
 		mouseOpen = off
 		mouseBend = off
 		
-		# stop strings' rings
 		for string in fretboard.strings
 			string.release()
-		
-		if e.keyCode is 32 # Spacebar
-			sustain = off
 	
 	$canvas.on "contextmenu", prevent
+	
+	$$.on "keyup", (e)->
+		if e.keyCode is 32 # Spacebar
+			sustain = off
+			for string in fretboard.strings
+				string.release()
 	
 	$$.on "keydown", (e)->
 		key = e.keyCode
@@ -666,6 +669,7 @@ $ ->
 					str.PLAYING_ID = PLAYING_ID
 					str.play(chord_note.f)
 				
+				# @TODO: .off()
 				$$.on "keyup", (e)->
 					if e.keyCode is key
 						for chord_note in chord
