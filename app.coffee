@@ -403,9 +403,9 @@ $ ->
 		
 		release: ->
 			now = actx.currentTime
-			@volume.gain.cancelScheduledValues(now)
+			## all this does is awkwardly reassert the volume (especially apparent with sustain)
+			## @volume.gain.cancelScheduledValues(now)
 			@volume.gain.linearRampToValueAtTime(0.0,now+0.33+(sustain*1))
-			# @FIXME awkward reassertion of the volume (especially apparent with sustain)
 		
 		stop: ->
 			now = actx.currentTime
