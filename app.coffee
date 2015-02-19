@@ -204,7 +204,7 @@ $ ->
 	recNote = null
 	playingNotes = {}
 	
-	$canvas = $("<canvas tabindex=0 touch-action=none/>").appendTo("body")
+	$canvas = $("<canvas tabindex=0 touch-action=pan-y/>").appendTo("body")
 	canvas = $canvas[0]
 	
 	$textarea = $("<textarea tabindex=1 autofocus/>").appendTo("body")
@@ -631,8 +631,7 @@ $ ->
 					str.PLAYING_ID = PLAYING_ID
 					str.play(chord_note.f)
 				
-				# @TODO: .off()
-				$$.on "keyup", (e)->
+				$$.on "keyup", onkeyup = (e)->
 					if e.keyCode is key
 						for chord_note in chord
 							str = fretboard.strings[chord_note.s]
@@ -640,6 +639,7 @@ $ ->
 								str.release()
 						
 						delete playingNotes[key]
+						$$.off "keyup", onkeyup
 	
 	$$.on "blur", ->
 		string.stop() for string in fretboard.strings
@@ -662,6 +662,4 @@ $ ->
 	$$.on "resize", resize
 	resize()
 
-
-# @TODO: mobile support
 
