@@ -204,7 +204,7 @@ $ ->
 	recNote = null
 	playingNotes = {}
 	
-	$canvas = $("<canvas tabindex=0/>").appendTo("body")
+	$canvas = $("<canvas tabindex=0 touch-action=none/>").appendTo("body")
 	canvas = $canvas[0]
 	
 	$textarea = $("<textarea tabindex=1 autofocus/>").appendTo("body")
@@ -214,15 +214,16 @@ $ ->
 	actx = if AudioContext? then new AudioContext else new webkitAudioContext
 	tuna = new Tuna(actx)
 	
+	notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
+	
 	getFrequency = (noten)->
-		440 * (2 ** ((noten - 49) / 12))
+		440 * 2 ** ((noten - 49) / notes.length)
 	
 	getNoteN = (notestr)->
-		notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
-		octave = Number notestr[-1..]
-		noten = notes.indexOf notestr[0...-1]
-		octave -= 1 if noten >= 3
-		noten += octave * 12 + 1
+		i = notes.indexOf notestr[0...-1]
+		octave = parseInt notestr[-1..]
+		octave -= 1 if i >= notes.indexOf 'C'
+		octave * notes.length + i + 1
 	
 	connect = (nodes...)->
 		for node, i in nodes when next = nodes[i+1]
@@ -392,7 +393,7 @@ $ ->
 	mouseOpen = off # override mouseFret to be open
 	mouseBend = off
 	
-	mouseFret = 0 # 0 = open string
+	mouseFret = 0
 	mouseFretX = 0
 	mouseFretW = -OSW*1.8
 	mouseString = 0
@@ -425,7 +426,7 @@ $ ->
 			mY = mouseY - @y
 			
 			unless mouseBend
-				mouseFret = 0 # = OPEN
+				mouseFret = 0
 				mouseFretX = 0
 				mouseFretW = -OSW*1.8
 			
@@ -573,19 +574,19 @@ $ ->
 		e.preventDefault()
 		no
 	
-	$$.on "mousemove mousedown", (e)->
+	$$.on "pointermove pointerdown", (e)->
 		offset = $canvas.offset()
 		mouseX = e.pageX - offset.left
 		mouseY = e.pageY - offset.top
 	
-	$canvas.on "mousedown", (e)->
+	$canvas.on "pointerdown", (e)->
 		mouseDown = on
 		mouseOpen = on if e.button is 2
 		mouseBend = on if e.button is 1
-		$$.on "mousemove", prevent # make it so you don't select text in the textarea when dragging from the canvas
+		$$.on "pointermove", prevent # make it so you don't select text in the textarea when dragging from the canvas
 	
-	$$.on "mouseup blur", (e)->
-		$$.off "mousemove", prevent # but let you drag other times
+	$$.on "pointerup blur", (e)->
+		$$.off "pointermove", prevent # but let you drag other times
 		mouseDown = off
 		mouseOpen = off
 		mouseBend = off
