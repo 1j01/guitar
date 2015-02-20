@@ -65,6 +65,12 @@ convolver = new tuna.Convolver
 
 ###
 
+cabinet = new tuna.Cabinet
+	makeupGain: 1                                 # 0 to 20
+	impulsePath: "impulses/impulse_guitar.wav"    # path to your speaker impulse
+	bypass: 0
+
+
 ###
 noiseConvolver = do ->
 	convolver = actx.createConvolver()
@@ -81,10 +87,10 @@ noiseConvolver = do ->
 
 # connect pre, wahwah, phaser, drive, chorus, post
 
-connect pre, chorus, wahwah, drive, post
+connect pre, chorus, wahwah, drive, cabinet, post
 
-# allow clean sound straight through
-connect chorus, post
+# allow clean sound straight through to the speaker
+#connect chorus, cabinet/post?
 
 
 splitter = actx.createChannelSplitter(2)
