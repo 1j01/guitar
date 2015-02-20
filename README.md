@@ -23,3 +23,12 @@ Uses <a href="https://github.com/Dinahmoe/tuna">tuna.js</a> audio effects librar
 
 * Support for different tunings?
 
+* Find a better way to fade out
+  (that doesn't end abruptly especially when amplified)
+
+* Allow configuring the effects chain
+  (at least toggle distortion on/off)
+
+* Tablature view that isn't just a text area
+  (show current song position, allow block-level editing)
+

@@ -17,9 +17,9 @@ post.gain.value = 0.3 # master volume
 
 drive = new tuna.Overdrive
 	outputGain: 0.5          # 0 to 1+
-	drive: 0.7               # 0 to 1
-	curveAmount: 1           # 0 to 1
-	algorithmIndex: 0        # 0 to 5, selects one of the drive algorithms
+	drive: 0.1               # 0 to 1
+	curveAmount: 0.6         # 0 to 1
+	algorithmIndex: 2        # 0 to 5, selects one of the drive algorithms
 	bypass: 0
 
 wahwah = new tuna.WahWah
@@ -80,13 +80,19 @@ noiseConvolver = do ->
 ###
 
 # connect pre, wahwah, phaser, drive, chorus, post
-connect pre, wahwah, chorus, post
+
+connect pre, chorus, wahwah, drive, post
+
+# allow clean sound straight through
+connect chorus, post
+
 
 splitter = actx.createChannelSplitter(2)
 merger = actx.createChannelMerger(2)
 post.connect(splitter)
 splitter.connect(merger)
 merger.connect(actx.destination)
+
 # merger = actx.createChannelMerger(2)
 # post.connect(merger, 0, 0)
 # post.connect(merger, 0, 1)
