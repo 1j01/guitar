@@ -22,14 +22,14 @@ drive = new tuna.Overdrive
 	algorithmIndex: 2        # 0 to 5, selects one of the drive algorithms
 	bypass: 0
 
-wahwah = new tuna.WahWah
-	automode: off                # on/off
-	baseFrequency: 0.5           # 0 to 1
-	excursionOctaves: 1          # 1 to 6
-	sweep: 0.2                   # 0 to 1
-	resonance: 2                 # 1 to 100
-	sensitivity: 0.3             # -1 to 1
-	bypass: 0
+# wahwah = new tuna.WahWah
+# 	automode: off                # on/off
+# 	baseFrequency: 0.5           # 0 to 1
+# 	excursionOctaves: 1          # 1 to 6
+# 	sweep: 0.2                   # 0 to 1
+# 	resonance: 2                 # 1 to 100
+# 	sensitivity: 0.3             # -1 to 1
+# 	bypass: 0
 
 phaser = new tuna.Phaser
 	rate: 1.2                      # 0.01 to 8 is a decent range, but higher values are possible
@@ -71,23 +71,31 @@ cabinet = new tuna.Cabinet
 	bypass: 0
 
 
-###
-noiseConvolver = do ->
-	convolver = actx.createConvolver()
-	noiseBuffer = actx.createBuffer(2, 0.5 * actx.sampleRate, actx.sampleRate)
-	left = noiseBuffer.getChannelData(0)
-	right = noiseBuffer.getChannelData(1)
-	for i in [0..noiseBuffer.length]
-		left[i] = Math.random() * 2 - 1
-		right[i] = Math.random() * 2 - 1
-	
-	convolver.buffer = noiseBuffer
-	convolver
-###
+# noiseConvolver = do ->
+# 	convolver = actx.createConvolver()
+# 	noiseBuffer = actx.createBuffer(2, 0.5 * actx.sampleRate, actx.sampleRate)
+# 	left = noiseBuffer.getChannelData(0)
+# 	right = noiseBuffer.getChannelData(1)
+# 	for i in [0..noiseBuffer.length]
+# 		# left[i] = Math.random() * 2 - 1 + Math.sin(i/noiseBuffer.length*3)
+# 		# right[i] = Math.random() * 2 - 1 + Math.cos(i/noiseBuffer.length*3)
+# 		left[i] = Math.sin(i/noiseBuffer.length*2600)
+# 		right[i] = Math.sin(i/noiseBuffer.length*2600)
+# 		# left[i] = Math.sin(i/actx.sampleRate*440*4) * 3 / noiseBuffer.length
+# 		# right[i] = Math.cos(i/actx.sampleRate*440*4) * 3 / noiseBuffer.length
+# 		# left[i] = Math.sin(i*i/5000) * 3 / noiseBuffer.length
+# 		# right[i] = Math.cos(i*i/5000) * 3 / noiseBuffer.length
+# 		# left[i] = #Math.sin(i/44)
+# 		# right[i] = #Math.cos(i/44)
+# 	
+# 	convolver.buffer = noiseBuffer
+# 	convolver
 
 # connect pre, wahwah, phaser, drive, chorus, post
 
-connect pre, chorus, wahwah, drive, cabinet, post
+# connect pre, chorus, wahwah, drive, cabinet, post
+connect pre, drive, cabinet, chorus, post
+# connect pre, chorus, drive, noiseConvolver, cabinet, post
 
 # allow clean sound straight through to the speaker
 #connect chorus, cabinet/post?
