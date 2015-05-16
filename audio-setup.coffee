@@ -22,14 +22,14 @@ drive = new tuna.Overdrive
 	algorithmIndex: 2        # 0 to 5, selects one of the drive algorithms
 	bypass: 0
 
-# wahwah = new tuna.WahWah
-# 	automode: off                # on/off
-# 	baseFrequency: 0.5           # 0 to 1
-# 	excursionOctaves: 1          # 1 to 6
-# 	sweep: 0.2                   # 0 to 1
-# 	resonance: 2                 # 1 to 100
-# 	sensitivity: 0.3             # -1 to 1
-# 	bypass: 0
+wahwah = new tuna.WahWah
+	automode: off                # on/off
+	baseFrequency: 0.4           # 0 to 1
+	excursionOctaves: 1          # 1 to 6
+	sweep: 0.2                   # 0 to 1
+	resonance: 2                 # 1 to 100
+	sensitivity: 0.3             # -1 to 1
+	bypass: 0
 
 phaser = new tuna.Phaser
 	rate: 1.2                      # 0.01 to 8 is a decent range, but higher values are possible
@@ -93,8 +93,7 @@ cabinet = new tuna.Cabinet
 
 # connect pre, wahwah, phaser, drive, chorus, post
 
-# connect pre, chorus, wahwah, drive, cabinet, post
-connect pre, drive, cabinet, chorus, post
+connect pre, chorus, wahwah, drive, cabinet, post
 # connect pre, chorus, drive, noiseConvolver, cabinet, post
 
 # allow clean sound straight through to the speaker
