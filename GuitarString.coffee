@@ -13,7 +13,7 @@ class @GuitarString
 		
 		@osc = actx.createOscillator()
 		@osc.frequency.value = @basefreq
-		@osc.type = "custom" # sine, square, sawtooth, triangle, custom
+		# @osc.type = "" # sine, square, sawtooth, triangle
 		
 		# let's make a custom wavetable...
 		curveLength = 10

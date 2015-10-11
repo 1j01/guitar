@@ -1,5 +1,5 @@
 
-@actx = if AudioContext? then new AudioContext else new webkitAudioContext
+@actx = new AudioContext
 tuna = new Tuna(actx)
 
 connect = (nodes...)->
