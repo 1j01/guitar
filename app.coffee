@@ -53,15 +53,19 @@ prevent = (e)->
 	e.preventDefault()
 	no
 
-$$.on "pointermove pointerdown", (e)->
+update_pointer_position = (e)->
 	offset = $canvas.offset()
 	fretboard.pointerX = e.pageX - offset.left
 	fretboard.pointerY = e.pageY - offset.top
+
+$$.on "pointermove", update_pointer_position
 
 $canvas.on "pointerdown", (e)->
 	fretboard.pointerDown = on
 	fretboard.pointerOpen = on if e.button is 2
 	fretboard.pointerBend = on if e.button is 1
+	update_pointer_position(e)
+	prevent(e)
 	$$.on "pointermove", prevent # make it so you don't select text in the textarea when dragging from the canvas
 
 $$.on "pointerup blur", (e)->

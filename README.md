@@ -13,13 +13,14 @@ The tablature parser is available as separately as a module [here][tablature-par
 
 ## TODO
 
-* FIXME: first note clicked is played as if it were open
-  (but recorded normally)
-
 * Better mobile support
   (You can't even play back recorded notes!)
 
 * Make web application self-explanatory
+
+* Make bending (MMB) less ridiculous
+
+* Maybe add scale highlighting like I did with [Tri-Chromatic Keyboard][]
 
 * Record chords
   (with multitouch or a modifier key, maybe also have some sort of toggle)
@@ -52,3 +53,4 @@ The tablature parser is available as separately as a module [here][tablature-par
 
 [tuna]: https://github.com/Dinahmoe/tuna
 [tablature-parser]: https://github.com/1j01/tablature-parser
+[Tri-Chromatic Keyboard]: https://github.com/1j01/tri-chromatic-keyboard
