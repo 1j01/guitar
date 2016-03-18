@@ -126,13 +126,22 @@ $ =>
 	$textarea.on "change", ->
 		text = $textarea.val()
 		if text isnt "#{song}"
-			res = interpretTabs(text)
-			console.log typeof res
-			if typeof res is "string"
-				$textarea.val("[!] #{res}").select()
-			else
+			try
+				res = parseTabs(text)
+			catch err
+				$textarea.val("[!] #{err}").select()
+			
+			if res
 				song.clear()
 				song.notes = res
+				
+				# for s, noteString of noteStrings
+				# 	console.log s, song.tabs.indexOf(s)
+				# 	if song.tabs.indexOf(s) >= 0
+				# 		song.tabs[tuning.indexOf(s)] += noteStrings[s]
+				# 	else
+				# 		console.log "UUHUHHH :/"
+				
 				$textarea.val(song)
 	
 	resize = ->
