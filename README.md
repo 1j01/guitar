@@ -14,7 +14,10 @@ The tablature parser is available as separately as a module [here][tablature-par
 ## TODO
 
 * Better mobile support
-  (You can't even play back recorded notes!)
+
+    - Play back recorded notes with a button
+    
+    - Multitouch
 
 * Make web application self-explanatory
 
@@ -43,8 +46,11 @@ The tablature parser is available as separately as a module [here][tablature-par
     - Allow configuring the effects chain
       (at least toggle distortion on/off)
 
-* Tablature view that isn't just a text area
-  (show current song position, allow block-level editing)
+* Tablature editor
+    
+    - Block-level editing
+     
+    - Show current song position
 
 * Stretch guitar up to the point of a realistic scale
   and then center it

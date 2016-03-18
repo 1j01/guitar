@@ -88,12 +88,13 @@ $$.on "keyup", (e)->
 
 $$.on "keydown", (e)->
 	key = e.keyCode
-	console?.log? key
+	console?.log? key if e.altKey
 	
-	if e.keyCode is 17 # Ctrl
-		tablature_editor.editor.focus() # just so Ctrl+A works outside the textarea
+	if e.ctrlKey and key is 65 # Ctrl+A
+		tablature_editor.editor.focus()
+		tablature_editor.editor.selection.selectAll()
 	
-	return if e.ctrlKey or e.shiftKey or e.altKey or key > ~~100
+	return if e.ctrlKey or e.shiftKey or e.altKey or key is 9 or key > ~~100
 	
 	if key is 36 # Home
 		song.pos = 0
@@ -132,7 +133,7 @@ $$.on "blur", ->
 
 tablature_editor.editor.on "blur", ->
 	text = tablature_editor.editor.getValue()
-	if text isnt "#{song}"
+	if text isnt "#{song}" and text
 		try
 			res = Tablature.parse(text)
 		catch err

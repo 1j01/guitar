@@ -10,6 +10,17 @@ class @TablatureEditor
 		@editor.setOption 'showPrintMargin', off
 		@editor.setOption 'showGutter', off
 		
+		# console.log @editor.keyBinding, @editor.commands
+		
+		# @editor.commands.addCommand
+		# 	name: "tab"
+		# 	bindKey: "Shift-Tab|Tab" # {win: "Tab", mac: "Tab"}
+		# 	command: "passKeysToBrowser"
+		# 	exec: ->
+		
+		@editor.commands.bindKey 'Tab', null
+		@editor.commands.bindKey 'Shift-Tab', null
+		
 		# tuning = "eBGDAE"
 		
 		# @editor.session.gutterRenderer =
