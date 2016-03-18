@@ -13,7 +13,7 @@ parseTabs = (tablature)->
 	# find sections of lines prefixed by string names
 		# (minimum of one dash in each line)
 	
-	lines = tablature.split("\n")
+	lines = tablature.split(/\r?\n/)
 	blocks = []
 	current_block = null
 	
@@ -101,7 +101,7 @@ parseTabs = (tablature)->
 	
 	# heuristically address the ambiguity where
 	# e.g. --12-- can mean either twelve or one then two
-	squishy = tablature.match(/[03-9]\d[^\n*]-/)?
+	squishy = tablature.match(/[03-9]\d[^\r\n]*-/)?
 	
 	pos = 0
 	cont = yes

@@ -7,13 +7,13 @@
 				padding: 0;
 				margin: 3px;
 			}
-			textarea {
+			.tablature-editor {
 				width: 100%;
-				height: 500px;
-				white-space: pre;
-				word-wrap: normal;
-				overflow-x: scroll;
-				font-family: monospace;
+				height: 200px;
+				border: rgba(0, 0, 0, 0.4) solid 1px;
+			}
+			.tablature-editor.ace_focus {
+				box-shadow: 0 0 2px #0080FF;
 			}
 			html, body, canvas {
 				-moz-user-select: -moz-none;
@@ -28,11 +28,13 @@
 		<script src="lib/webaudioshim.js"></script>
 		<script src="lib/tuna.js"></script>
 		<script src="lib/coffee-script.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace.js"></script>
 	</head>
 	<body>
 		<script src="helpers.coffee" type="text/coffeescript"></script>
 		<script src="audio-setup.coffee" type="text/coffeescript"></script>
 		<script src="tablature.coffee" type="text/coffeescript"></script>
+		<script src="TablatureEditor.coffee" type="text/coffeescript"></script>
 		<script src="GuitarString.coffee" type="text/coffeescript"></script>
 		<script src="Fretboard.coffee" type="text/coffeescript"></script>
 		<script src="app.coffee" type="text/coffeescript"></script>

@@ -19,8 +19,8 @@
 			song.strings[s] += if s is recNote.s then recNote.f else dashes
 			song.strings[s] += "-" # additional dash to space notes apart
 		
-		$textarea.val(song)
-		$textarea[0].scrollLeft = $textarea[0].scrollWidth
+		tablature_editor.editor.setValue("#{song}", 1)
+		# tablature_editor.editor.scrollToX(Infinity)
 
 song.clear()
 
@@ -29,7 +29,8 @@ song.clear()
 $canvas = $("<canvas tabindex=0 touch-action=pan-y/>").appendTo("body")
 canvas = $canvas[0]
 
-$textarea = $("<textarea tabindex=1 autofocus/>").appendTo("body")
+$tablature_editor = $("<div class='tablature-editor'/>").appendTo("body")
+tablature_editor = new TablatureEditor($tablature_editor[0])
 
 ctx = canvas.getContext("2d")
 
@@ -90,7 +91,7 @@ $$.on "keydown", (e)->
 	console?.log? key
 	
 	if e.keyCode is 17 # Ctrl
-		$textarea.focus() # just so Ctrl+A works outside the textarea
+		tablature_editor.editor.focus() # just so Ctrl+A works outside the textarea
 	
 	return if e.ctrlKey or e.shiftKey or e.altKey or key > ~~100
 	
@@ -129,20 +130,21 @@ $$.on "keydown", (e)->
 $$.on "blur", ->
 	string.stop() for string in fretboard.strings
 
-$textarea.on "change", ->
-	text = $textarea.val()
+tablature_editor.editor.on "blur", ->
+	text = tablature_editor.editor.getValue()
 	if text isnt "#{song}"
 		try
 			res = Tablature.parse(text)
 		catch err
-			$textarea.val("[!] #{err}").select()
+			# @TODO: errors should be displayed separately
+			tablature_editor.editor.setValue("[!] #{err}")
 		
 		if res
 			song.clear()
 			song.notes = res
 			song.strings = Tablature.stringify(res).split("\n")
 			
-			$textarea.val(song)
+			tablature_editor.editor.setValue("#{song}", 1)
 
 resize = ->
 	canvas.width = document.body.clientWidth
