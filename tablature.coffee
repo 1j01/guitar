@@ -137,19 +137,35 @@ parseTabs = (tablature)->
 		pos++
 		pos++ if multi_digit
 	
-	# for s, string of strings
-	# 	console.log s, song.tabs.indexOf(s)
-	# 	if song.tabs.indexOf(s) >= 0
-	# 		song.tabs[tuning.indexOf(s)] += strings[s]
-	# 	else
-	# 		console.log "UUHUHHH :/"
-	
 	return notes
 
 
-# @TODO: parse and stringify?
+paddingLeft = (string="", character, length)->
+	(Array(length + 1).join(character) + string).slice(-length)
+
+paddingRight = (string="", character, length)->
+	(string + Array(length + 1).join(character)).slice(0, length)
+
+
+stringifyTabs = (notes, tuning = "eBGDAE")->
+	strings = ("#{string_name}|-" for string_name in tuning)
+	
+	for chord in notes
+		notes_here = (null for string_name in tuning)
+		max_length = 1
+		for note in chord
+			notes_here[note.s] = note.f
+			max_length = Math.max(max_length, "#{note.f}".length)
+		for string, i in strings
+			strings[i] += "#{paddingRight(notes_here[i], "-", max_length)}-"
+	
+	strings.join "\n"
+
+Tablature =
+	parse: parseTabs
+	stringify: stringifyTabs
 
 if module?
-	module.exports = parseTabs
+	module.exports = Tablature
 else
-	@parseTabs = parseTabs
+	@Tablature = Tablature

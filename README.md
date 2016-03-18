@@ -13,20 +13,18 @@ The tablature parser is available as separately as a module [here][tablature-par
 
 ## TODO
 
-* Re-implement tab stringification
-
 * FIXME: first note clicked is played as if it were open
   (but recorded normally)
 
 * Better mobile support
-  (You can't even play back notes!)
+  (You can't even play back recorded notes!)
 
-* Self-explanatory web application
+* Make web application self-explanatory
 
 * Record chords
-  (with multitouch or a modifier key, maybe also have some toggle)
+  (with multitouch or a modifier key, maybe also have some sort of toggle)
 
-* Record, parse, and playback articulations
+* Record, parse, and play back articulations
   such as slides, bends, vibratos, hammer-ons, and pull-offs
 
 * Support for different tunings
