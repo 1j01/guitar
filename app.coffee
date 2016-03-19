@@ -67,6 +67,7 @@ $canvas.on "pointerdown", (e)->
 	fretboard.pointerBend = on if e.button is 1
 	update_pointer_position(e)
 	prevent(e)
+	$canvas.focus()
 	$$.on "pointermove", prevent # make it so you don't select text in the textarea when dragging from the canvas
 
 $$.on "pointerup blur", (e)->

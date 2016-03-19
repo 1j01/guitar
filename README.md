@@ -13,8 +13,6 @@ The tablature parser is available as separately as a module [here][tablature-par
 
 ## TODO
 
-* Focus the guitar (canvas) when clicked
-
 * Better mobile support
 
     - Play back recorded notes with a button
