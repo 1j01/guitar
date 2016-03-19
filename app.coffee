@@ -20,7 +20,9 @@
 			song.strings[s] += "-" # additional dash to space notes apart
 		
 		tablature_editor.editor.setValue("#{song}", 1)
-		# tablature_editor.editor.scrollToX(Infinity)
+		
+		if song.notes.length is 1
+			tablature_editor.highlightSongPosition(song.pos)
 
 song.clear()
 
@@ -31,6 +33,7 @@ canvas = $canvas[0]
 
 $tablature_editor = $("<div class='tablature-editor'/>").appendTo("body")
 tablature_editor = new TablatureEditor($tablature_editor[0])
+tablature_editor.highlightSongPosition(song.pos)
 
 ctx = canvas.getContext("2d")
 
@@ -99,6 +102,7 @@ $$.on "keydown", (e)->
 	
 	if key is 36 # Home
 		song.pos = 0
+		tablature_editor.highlightSongPosition(song.pos)
 	else if key is 32 # Spacebar
 		sustain = on
 	else
@@ -112,6 +116,7 @@ $$.on "keydown", (e)->
 			
 			playingNotes[key] = chord
 			song.pos = (song.pos+1) % song.notes.length
+			tablature_editor.highlightSongPosition(song.pos)
 			
 			PLAYING_ID = Math.random()
 			for chord_note in chord

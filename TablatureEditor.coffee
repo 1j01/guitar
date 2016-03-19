@@ -22,6 +22,25 @@ class @TablatureEditor
 		# 	getText: (session, row)->
 		# 		tuning[row] ? ""
 		
+		@highlight_markers = []
+		@positions = []
+		
+		@editor.on "change", =>
+			tablature = @editor.getValue()
+			lines = tablature.split(/\r?\n/)
+			
+			@positions = []
+			last_had_digit = no
+			x = 0
+			while x < lines[0].length
+				has_digit = no
+				for line in lines
+					has_digit = yes if line[x].match(/\d/)
+				if has_digit and not last_had_digit
+					@positions.push x
+				last_had_digit = has_digit
+				x++
+		
 		# The following is based on the default multi-selection block selection code:
 		# https://github.com/ajaxorg/ace/blob/master/lib/ace/mouse/multi_select_handler.js
 		
@@ -117,17 +136,18 @@ class @TablatureEditor
 
 			return e.preventDefault()
 	
-	###
-	select: (columnStart, columnEnd) ->
-		if @multi_selection
-			i = 0
-			while i < @multi_selection.length
-				@editor.getSession().removeMarker @multi_selection[i].markerId
-				i++
+	highlightSongPosition: (pos)->
+		column = @positions[pos]
+		@highlight column-1, column
+	
+	highlight: (columnStart, columnEnd) ->
+		for marker in @highlight_markers
+			@editor.getSession().removeMarker marker
 		
-		@multi_selection =
+		@highlight_markers =
 			for i in [0..6]
 				range = new Range(i, columnStart, i, columnEnd)
-				marker = @editor.addSelectionMarker(range)
+				# marker = @editor.addSelectionMarker(range)
+				marker = @editor.getSession().addMarker(range, "playback-position", "text")
+				# marker = @editor.getSession().addMarker(range, "playback-position", "not text?")
 				marker
-	###
