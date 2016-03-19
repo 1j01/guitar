@@ -13,6 +13,8 @@ The tablature parser is available as separately as a module [here][tablature-par
 
 ## TODO
 
+* Focus the guitar (canvas) when clicked
+
 * Better mobile support
 
     - Play back recorded notes with a button
@@ -48,8 +50,6 @@ The tablature parser is available as separately as a module [here][tablature-par
 
 * Tablature editor
     
-    - Block-level editing
-     
     - Show current song position
 
 * Stretch guitar up to the point of a realistic scale
