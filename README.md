@@ -58,11 +58,13 @@ The tablature parser is available as separately as a module [here][tablature-par
     
     - Insert and overwrite notes with the guitar
     
-    - Separate errors from the Ace editor
-    
     - Shift+click to select
     
     - Disable or override double-click and triple-click
+    
+    - Toggle custom selection behavior
+    
+    - Maybe have a button to toggle insert/overwrite too
     
     - Why does the selection style change on mouseup?
 

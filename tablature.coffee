@@ -33,6 +33,7 @@ parseTabs = (tablature)->
 	for line in lines
 		if line.match(/[-–—]/)
 			unless current_block
+				# @TODO: add property lineno
 				current_block = {lines: []}
 				blocks.push current_block
 			current_block.lines.push line
@@ -64,18 +65,32 @@ parseTabs = (tablature)->
 		for line in lines
 			if line.length > min_length
 				unless line[min_length] is " "
-					alignment_marker = "<<"
-					throw new Error """
-						Tab interpretation failed due to misalignment:
+					alignment_marker = " <<"
+					# @TODO: dedupe alignment markers
+					# @TODO: include the line number of the start of the broken block
+					misaligned = (
+						for line in lines
+							if line[min_length] is " "
+								"#{line.slice(0, min_length)}#{alignment_marker}#{line.slice(min_length)}"
+							else
+								"#{line}#{alignment_marker}"
+					).join("\n")
+					message_only = "Tab interpretation failed due to misalignment"
+					error = new Error """
+						#{message_only}:
 						
-						#{(
-							for line in lines
-								if line[min_length] is " "
-									"#{line.slice(0, min_length)} #{alignment_marker}#{line.slice(min_length)}"
-								else
-									"#{line} #{alignment_marker}"
-						).join("\n")}
+						#{misaligned}
 					"""
+					error.message_only = message_only
+					error.misaligned_block = misaligned
+					error.blocks = (
+						for _block in blocks
+							if _block is block
+								misaligned
+							else
+								_block.lines.join("\n")
+					).join("\n\n")
+					throw error
 		
 		lines =
 			for line in lines

@@ -19,6 +19,8 @@
 			song.strings[s] += if s is recNote.s then recNote.f else dashes
 			song.strings[s] += "-" # additional dash to space notes apart
 		
+		$tablature_error.text("").hide()
+		
 		tablature_editor.editor.setValue("#{song}", 1)
 		
 		if song.notes.length is 1
@@ -31,6 +33,7 @@ song.clear()
 $canvas = $("<canvas tabindex=0 touch-action=pan-y/>").appendTo("body")
 canvas = $canvas[0]
 
+$tablature_error = $("<div class='error'/>").appendTo("body").hide()
 $tablature_editor = $("<div class='tablature-editor'/>").appendTo("body")
 tablature_editor = new TablatureEditor($tablature_editor[0])
 tablature_editor.showPlaybackPosition(song.pos)
@@ -145,17 +148,30 @@ tablature_editor.editor.on "blur", ->
 	if text isnt "#{song}" and text
 		try
 			res = Tablature.parse(text)
-		catch err
-			# @TODO: errors should be displayed separately
-			tablature_editor.editor.setValue("[!] #{err}")
+		catch error
+			# if error.message.match(/:\n\n/)
+			# 	[error_message, broken_block] = error.message.split(/:\n\n/)
+			# else
+			# 	error_message = error.message
+			# $tablature_error.text(error_message).show()
+			# if broken_block
+			# 	tablature_editor.editor.setValue("#{song}", -1)
+			if error.blocks
+				$tablature_error.text(error.message_only).show()
+				tablature_editor.editor.setValue(error.blocks, -1)
+			else
+				$tablature_error.text(error.message).show()
 		
 		if res
 			song.clear()
 			song.notes = res
 			song.strings = Tablature.stringify(res).split("\n")
 			
+			$tablature_error.text("").hide()
 			tablature_editor.editor.setValue("#{song}", -1)
 			tablature_editor.showPlaybackPosition(song.pos)
+	else
+		$tablature_error.text("").hide()
 
 resize = ->
 	canvas.width = document.body.clientWidth
