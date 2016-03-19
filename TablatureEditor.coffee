@@ -22,7 +22,9 @@ class @TablatureEditor
 		# 	getText: (session, row)->
 		# 		tuning[row] ? ""
 		
-		@highlight_markers = []
+		@column_highlight_markers = []
+		@playing_note_highlight_markers = {}
+		
 		@positions = []
 		
 		@editor.on "change", =>
@@ -136,18 +138,29 @@ class @TablatureEditor
 
 			return e.preventDefault()
 	
+	highlightPlayingNote: (pos, note)->
+		@removePlayingNote(pos, note)
+		key = "#{note.s}:#{pos}"
+		
+		column = @positions[pos]
+		
+		range = new Range(note.s, column, note.s, column+1)
+		marker = @editor.getSession().addMarker(range, "playing-note", "text") # text?
+		@playing_note_highlight_markers[key] = marker
+	
+	removePlayingNote: (pos, note)->
+		key = "#{note.s}:#{pos}"
+		existing_marker = @playing_note_highlight_markers[key]
+		@editor.getSession().removeMarker existing_marker if existing_marker
+	
 	highlightSongPosition: (pos)->
 		column = @positions[pos]
-		@highlight column-1, column
-	
-	highlight: (columnStart, columnEnd) ->
-		for marker in @highlight_markers
+		
+		for marker in @column_highlight_markers
 			@editor.getSession().removeMarker marker
 		
-		@highlight_markers =
+		@column_highlight_markers =
 			for i in [0..6]
-				range = new Range(i, columnStart, i, columnEnd)
-				# marker = @editor.addSelectionMarker(range)
-				marker = @editor.getSession().addMarker(range, "playback-position", "text")
-				# marker = @editor.getSession().addMarker(range, "playback-position", "not text?")
+				range = new Range(i, column-1, i, column)
+				marker = @editor.getSession().addMarker(range, "playback-position", "text") # text?
 				marker

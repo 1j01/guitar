@@ -46,8 +46,7 @@ The tablature parser is available as separately as a module [here][tablature-par
     - Allow configuring the effects chain
       (at least toggle distortion on/off)
 
-* Highlight notes being played in the tablature editor,
-  and maybe postpone updating the playback position highlight until keyup
+* Make the tablature editor scroll with the playback position
 
 * Stretch guitar up to the point of a realistic scale
   and then center it

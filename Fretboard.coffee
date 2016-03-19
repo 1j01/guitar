@@ -146,7 +146,7 @@ class @Fretboard
 			b = 5
 			ctx.fillRect(@pointerFretX+b,@pointerStringY-sh/2+b,@pointerFretW,sh-b-b) # @pointerFretW-b*2
 		
-		# draw recorded notes playing back from keyboard
+		# draw notes being played back from keyboard
 		for key, chord of playingNotes
 			for i, note of chord
 				b = 5

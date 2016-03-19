@@ -115,24 +115,27 @@ $$.on "keydown", (e)->
 			chord = if play.length then play else [play]
 			
 			playingNotes[key] = chord
+			chord_pos = song.pos
 			song.pos = (song.pos+1) % song.notes.length
-			tablature_editor.highlightSongPosition(song.pos)
 			
 			PLAYING_ID = Math.random()
 			for chord_note in chord
 				str = fretboard.strings[chord_note.s]
 				str.PLAYING_ID = PLAYING_ID
 				str.play(chord_note.f)
+				tablature_editor.highlightPlayingNote(chord_pos, chord_note)
 			
 			$$.on "keyup", onkeyup = (e)->
 				if e.keyCode is key
 					for chord_note in chord
 						str = fretboard.strings[chord_note.s]
-						if str.PLAYING_ID is PLAYING_ID
-							str.release()
+						str.release() if str.PLAYING_ID is PLAYING_ID
+						tablature_editor.removePlayingNote(chord_pos, chord_note)
 					
 					delete playingNotes[key]
 					$$.off "keyup", onkeyup
+					
+					tablature_editor.highlightSongPosition(song.pos)
 
 $$.on "blur", ->
 	string.stop() for string in fretboard.strings
