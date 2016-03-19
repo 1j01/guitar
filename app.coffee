@@ -150,15 +150,8 @@ tablature_editor.editor.on "blur", ->
 	text = tablature_editor.editor.getValue()
 	if text isnt "#{song}" and text
 		try
-			res = Tablature.parse(text)
+			res = Tablature.parse(text.replace(/\ <</g, ""))
 		catch error
-			# if error.message.match(/:\n\n/)
-			# 	[error_message, broken_block] = error.message.split(/:\n\n/)
-			# else
-			# 	error_message = error.message
-			# $tablature_error.text(error_message).show()
-			# if broken_block
-			# 	tablature_editor.editor.setValue("#{song}", -1)
 			if error.blocks
 				$tablature_error.text(error.message_only).show()
 				tablature_editor.editor.setValue(error.blocks, -1)

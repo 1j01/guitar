@@ -59,6 +59,7 @@ class @TablatureEditor
 		
 		# The following is based on the default multi-selection block selection code:
 		# https://github.com/ajaxorg/ace/blob/master/lib/ace/mouse/multi_select_handler.js
+		# @TODO: move this somewhere? there's more interesting code after it
 		
 		isSamePoint = (p1, p2)->
 			p1.row is p2.row and p1.column is p2.column
@@ -180,6 +181,7 @@ class @TablatureEditor
 				marker = @editor.getSession().addMarker(range, "playback-position", "text") # text?
 				marker
 		
+		# @TODO: scroll the playback position into view
 		# @editor.revealRange range
 		# pageX_1 = @editor.renderer.textToScreenCoordinates(0, 0).pageX
 		# pageX_2 = @editor.renderer.textToScreenCoordinates(column, 0).pageX

@@ -65,7 +65,6 @@ parseTabs = (tablature)->
 			if line.length > min_length
 				unless line[min_length] is " "
 					alignment_marker = " <<"
-					# @TODO: dedupe alignment markers
 					misaligned = (
 						for line in lines
 							if line[min_length] is " "
