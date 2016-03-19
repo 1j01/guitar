@@ -21,7 +21,7 @@ parseTabs = (tablature)->
 		if current_block
 			current_block.tuning = ""
 			for block_line in current_block.lines
-				m = block_line.match(/^\s*(\w)/)
+				m = block_line.match(/^\s*([A-G])/i)
 				if m?
 					current_block.tuning += m[1]
 				else
@@ -95,7 +95,7 @@ parseTabs = (tablature)->
 		
 		for line, i in lines
 			
-			m = line.match(/^\s*(\w)\s*(.*)$/)
+			m = line.match(/^\s*([A-G])\s*(.*)$/i)
 			if m?
 				string_name = m[1].toUpperCase()
 				some_notes = m[2].trim()
