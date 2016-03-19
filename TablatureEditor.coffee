@@ -10,9 +10,12 @@ class @TablatureEditor
 		@editor.setOption 'highlightActiveLine', off
 		@editor.setOption 'showPrintMargin', off
 		@editor.setOption 'showGutter', off
+		# setAnimatedScroll
 		
 		@editor.commands.bindKey 'Tab', null
 		@editor.commands.bindKey 'Shift-Tab', null
+		
+		@editor.$blockScrolling = Infinity
 		
 		# tuning = "eBGDAE"
 		
@@ -27,21 +30,32 @@ class @TablatureEditor
 		
 		@positions = []
 		
-		@editor.on "change", =>
+		get_lines = =>
 			tablature = @editor.getValue()
 			lines = tablature.split(/\r?\n/)
-			
+		
+		lines_are_uneven = (lines)=>
+			lines.some (line)->
+				line.length isnt lines[0].length
+		
+		@editor.on "change", =>
 			@positions = []
-			last_had_digit = no
-			x = 0
-			while x < lines[0].length
-				has_digit = no
-				for line in lines
-					has_digit = yes if line[x].match(/\d/)
-				if has_digit and not last_had_digit
-					@positions.push x
-				last_had_digit = has_digit
-				x++
+			
+			lines = get_lines()
+			
+			if lines_are_uneven(lines)
+				@hidePlaybackPosition()
+				return
+			
+			last_column_had_digit = no
+			column = 0
+			while column < lines[0].length
+				column_has_digit = lines.some (line)->
+					line[column].match(/\d/)
+				if column_has_digit and not last_column_had_digit
+					@positions.push column
+				last_column_had_digit = column_has_digit
+				column++
 		
 		# The following is based on the default multi-selection block selection code:
 		# https://github.com/ajaxorg/ace/blob/master/lib/ace/mouse/multi_select_handler.js
@@ -56,6 +70,8 @@ class @TablatureEditor
 		@editor.on "mousedown", (e)=>
 			button = e.getButton()
 			return unless button is 0
+			
+			return if lines_are_uneven(get_lines())
 			
 			e.stop()
 			
@@ -138,7 +154,7 @@ class @TablatureEditor
 
 			return e.preventDefault()
 	
-	highlightPlayingNote: (pos, note)->
+	showPlayingNote: (pos, note)->
 		@removePlayingNote(pos, note)
 		key = "#{note.s}:#{pos}"
 		
@@ -153,14 +169,27 @@ class @TablatureEditor
 		existing_marker = @playing_note_highlight_markers[key]
 		@editor.getSession().removeMarker existing_marker if existing_marker
 	
-	highlightSongPosition: (pos)->
+	showPlaybackPosition: (pos)->
 		column = @positions[pos]
 		
-		for marker in @column_highlight_markers
-			@editor.getSession().removeMarker marker
+		@hidePlaybackPosition()
 		
 		@column_highlight_markers =
 			for i in [0..6]
 				range = new Range(i, column-1, i, column)
 				marker = @editor.getSession().addMarker(range, "playback-position", "text") # text?
 				marker
+		
+		# @editor.revealRange range
+		# pageX_1 = @editor.renderer.textToScreenCoordinates(0, 0).pageX
+		# pageX_2 = @editor.renderer.textToScreenCoordinates(column, 0).pageX
+		# console.log pageX_1, pageX_2
+		# delta_pageX = pageX_2 - pageX_1
+		# @editor.renderer.scrollToX column * delta_pageX
+		# @editor.renderer.scrollToX column * 7
+	
+	hidePlaybackPosition: ->
+		for marker in @column_highlight_markers
+			@editor.getSession().removeMarker marker
+		
+		@column_highlight_markers = []

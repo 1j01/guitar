@@ -46,7 +46,25 @@ The tablature parser is available as separately as a module [here][tablature-par
     - Allow configuring the effects chain
       (at least toggle distortion on/off)
 
-* Make the tablature editor scroll with the playback position
+* Tablature editor
+    
+    - Scroll with the playback position
+    
+    - Make the playback position indicator different while playing
+    
+    - Handle multi-digit numbers when highlighting stuff
+    
+    - Set the position in the song when you click in the tablature editor
+    
+    - Insert and overwrite notes with the guitar
+    
+    - Separate errors from the Ace editor
+    
+    - Shift+click to select
+    
+    - Disable or override double-click and triple-click
+    
+    - Why does the selection style change on mouseup?
 
 * Stretch guitar up to the point of a realistic scale
   and then center it

@@ -22,7 +22,7 @@
 		tablature_editor.editor.setValue("#{song}", 1)
 		
 		if song.notes.length is 1
-			tablature_editor.highlightSongPosition(song.pos)
+			tablature_editor.showPlaybackPosition(song.pos)
 
 song.clear()
 
@@ -33,7 +33,7 @@ canvas = $canvas[0]
 
 $tablature_editor = $("<div class='tablature-editor'/>").appendTo("body")
 tablature_editor = new TablatureEditor($tablature_editor[0])
-tablature_editor.highlightSongPosition(song.pos)
+tablature_editor.showPlaybackPosition(song.pos)
 
 ctx = canvas.getContext("2d")
 
@@ -102,7 +102,7 @@ $$.on "keydown", (e)->
 	
 	if key is 36 # Home
 		song.pos = 0
-		tablature_editor.highlightSongPosition(song.pos)
+		tablature_editor.showPlaybackPosition(song.pos)
 	else if key is 32 # Spacebar
 		sustain = on
 	else
@@ -123,7 +123,7 @@ $$.on "keydown", (e)->
 				str = fretboard.strings[chord_note.s]
 				str.PLAYING_ID = PLAYING_ID
 				str.play(chord_note.f)
-				tablature_editor.highlightPlayingNote(chord_pos, chord_note)
+				tablature_editor.showPlayingNote(chord_pos, chord_note)
 			
 			$$.on "keyup", onkeyup = (e)->
 				if e.keyCode is key
@@ -135,7 +135,7 @@ $$.on "keydown", (e)->
 					delete playingNotes[key]
 					$$.off "keyup", onkeyup
 					
-					tablature_editor.highlightSongPosition(song.pos)
+					tablature_editor.showPlaybackPosition(song.pos)
 
 $$.on "blur", ->
 	string.stop() for string in fretboard.strings
@@ -154,7 +154,8 @@ tablature_editor.editor.on "blur", ->
 			song.notes = res
 			song.strings = Tablature.stringify(res).split("\n")
 			
-			tablature_editor.editor.setValue("#{song}", 1)
+			tablature_editor.editor.setValue("#{song}", -1)
+			tablature_editor.showPlaybackPosition(song.pos)
 
 resize = ->
 	canvas.width = document.body.clientWidth
