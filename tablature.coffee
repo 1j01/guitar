@@ -33,7 +33,6 @@ parseTabs = (tablature)->
 	for line in lines
 		if line.match(/[-–—]/)
 			unless current_block
-				# @TODO: add property lineno
 				current_block = {lines: []}
 				blocks.push current_block
 			current_block.lines.push line
@@ -67,7 +66,6 @@ parseTabs = (tablature)->
 				unless line[min_length] is " "
 					alignment_marker = " <<"
 					# @TODO: dedupe alignment markers
-					# @TODO: include the line number of the start of the broken block
 					misaligned = (
 						for line in lines
 							if line[min_length] is " "

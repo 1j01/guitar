@@ -143,6 +143,9 @@ $$.on "keydown", (e)->
 $$.on "blur", ->
 	string.stop() for string in fretboard.strings
 
+# @TODO: maybe listen for change and indicate that you need to unfocus it to update
+# or better yet just conditionally show a button
+
 tablature_editor.editor.on "blur", ->
 	text = tablature_editor.editor.getValue()
 	if text isnt "#{song}" and text
@@ -159,6 +162,10 @@ tablature_editor.editor.on "blur", ->
 			if error.blocks
 				$tablature_error.text(error.message_only).show()
 				tablature_editor.editor.setValue(error.blocks, -1)
+				index = error.blocks.indexOf(error.misaligned_block)
+				unless index is -1
+					position = tablature_editor.editor.getSession().getDocument().indexToPosition(index)
+					tablature_editor.editor.scrollToRow(position.row)
 			else
 				$tablature_error.text(error.message).show()
 		

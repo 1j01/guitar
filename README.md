@@ -66,6 +66,12 @@ The tablature parser is available as separately as a module [here][tablature-par
     
     - Maybe have a button to toggle insert/overwrite too
     
+    - Custom syntax highlighting
+        
+        + Highlight tablature with articulations and everything
+        
+        + Highlight `<<` misalignment markers as erroneous
+    
     - Why does the selection style change on mouseup?
 
 * Stretch guitar up to the point of a realistic scale
