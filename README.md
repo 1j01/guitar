@@ -73,6 +73,8 @@ The tablature parser is available as separately as a module [here][tablature-par
         + Highlight `<<` misalignment markers as erroneous
     
     - Why does the selection style change on mouseup?
+    
+    - Maybe add some padding with `renderer.setPadding`?
 
 * Stretch guitar up to the point of a realistic scale
   and then center it

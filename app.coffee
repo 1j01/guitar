@@ -28,64 +28,18 @@
 
 song.clear()
 
-@playingNotes = {}
-
-$canvas = $("<canvas tabindex=0 touch-action=pan-y/>").appendTo("body")
-canvas = $canvas[0]
-
 $tablature_error = $("<div class='error'/>").appendTo("body").hide()
 $tablature_editor = $("<div class='tablature-editor'/>").appendTo("body")
 tablature_editor = new TablatureEditor($tablature_editor[0])
 tablature_editor.showPlaybackPosition(song.pos)
 
-ctx = canvas.getContext("2d")
-
 @fretboard = new Fretboard
-
-render = ->
-	ctx.clearRect(0,0,canvas.width,canvas.height)
-	fretboard.draw(ctx)
-
-do animate = ->
-	render()
-	requestAnimationFrame(animate)
 
 
 # # # # # # # # # # # # # # # # # # # # # # 
 
 
 $$ = $(window)
-
-prevent = (e)->
-	e.preventDefault()
-	no
-
-update_pointer_position = (e)->
-	offset = $canvas.offset()
-	fretboard.pointerX = e.pageX - offset.left
-	fretboard.pointerY = e.pageY - offset.top
-
-$$.on "pointermove", update_pointer_position
-
-$canvas.on "pointerdown", (e)->
-	fretboard.pointerDown = on
-	fretboard.pointerOpen = on if e.button is 2
-	fretboard.pointerBend = on if e.button is 1
-	update_pointer_position(e)
-	prevent(e)
-	$canvas.focus()
-	$$.on "pointermove", prevent # make it so you don't select text in the textarea when dragging from the canvas
-
-$$.on "pointerup blur", (e)->
-	$$.off "pointermove", prevent # but let you drag other times
-	fretboard.pointerDown = off
-	fretboard.pointerOpen = off
-	fretboard.pointerBend = off
-	string.release() for string in fretboard.strings
-
-# @TODO: pointercancel/blur/Esc
-
-$canvas.on "contextmenu", prevent
 
 $$.on "keyup", (e)->
 	if e.keyCode is 32 # Spacebar
@@ -111,13 +65,13 @@ $$.on "keydown", (e)->
 	else
 		unless e.target.tagName.match /textarea|input/i
 			
-			return if playingNotes[key] # prevent repeat
+			return if fretboard.playing_notes[key] # prevent repeat
 			play = song.notes[song.pos]
 			return unless play
 			
 			chord = if play.length then play else [play]
 			
-			playingNotes[key] = chord
+			fretboard.playing_notes[key] = chord
 			chord_pos = song.pos
 			song.pos = (song.pos+1) % song.notes.length
 			
@@ -135,7 +89,7 @@ $$.on "keydown", (e)->
 						str.release() if str.PLAYING_ID is PLAYING_ID
 						tablature_editor.removePlayingNote(chord_pos, chord_note)
 					
-					delete playingNotes[key]
+					delete fretboard.playing_notes[key]
 					$$.off "keyup", onkeyup
 					
 					tablature_editor.showPlaybackPosition(song.pos)
@@ -172,12 +126,3 @@ tablature_editor.editor.on "blur", ->
 			tablature_editor.showPlaybackPosition(song.pos)
 	else
 		$tablature_error.text("").hide()
-
-resize = ->
-	canvas.width = document.body.clientWidth
-	canvas.height = fretboard.h + fretboard.y*2
-
-$$.on "resize", resize
-resize()
-
-

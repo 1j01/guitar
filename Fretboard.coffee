@@ -2,18 +2,12 @@
 class @Fretboard
 	
 	OSW = 60 # Open Strings area Width (left of the fretboard)
+	$$ = $(window)
 	
-	x: OSW
-	y: 60
-	w: 31337
-	h: 300
 	num_frets: 40
-	scale: 1716
-	# inlays: [0,0,0,0,1,0,1,0,0,1,0,1,190,0,0,0,0,0,0,0,0,0,0,0,3] # <--
-	inlays: [0,0,1,0,1,0,1,0,1,0,0,2,0,0,1,0,1,0,1,0,1,0,0,2] # most common
-	# inlays: [0,0,1,0,1,0,1,0,0,1,0,2,0,0,1,0,1,0,1,0,0,1,0,2] # less common
-	
-	recNote = null
+	# inlays: [0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 190, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3] # <--
+	inlays: [0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2] # most common
+	# inlays: [0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 2, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 2] # less common
 	
 	constructor: ->
 		@strings = [
@@ -24,6 +18,12 @@ class @Fretboard
 			new GuitarString "A2"
 			new GuitarString "E2"
 		]
+		
+		@scale = 1716
+		@x = OSW
+		@y = 60
+		@w = 31337
+		@h = 300
 		
 		@pointerX = 0
 		@pointerY = 0
@@ -36,15 +36,69 @@ class @Fretboard
 		@pointerFretW = -OSW*1.8
 		@pointerString = 0
 		@pointerStringY = 0
+		
+		@rec_note = null
+		
+		@playing_notes = {}
+		
+		$canvas = $("<canvas tabindex=0 touch-action=pan-y/>").appendTo("body")
+		canvas = $canvas[0]
+		
+		ctx = canvas.getContext("2d")
+		
+		prevent = (e)->
+			e.preventDefault()
+			no
+		
+		update_pointer_position = (e)=>
+			offset = $canvas.offset()
+			@pointerX = e.pageX - offset.left
+			@pointerY = e.pageY - offset.top
+		
+		$$.on "pointermove", update_pointer_position
+		
+		$canvas.on "pointerdown", (e)=>
+			@pointerDown = on
+			@pointerOpen = on if e.button is 2
+			@pointerBend = on if e.button is 1
+			update_pointer_position(e)
+			prevent(e)
+			$canvas.focus()
+			$$.on "pointermove", prevent # make it so you don't select text in the textarea when dragging from the canvas
+		
+		$$.on "pointerup blur", (e)=>
+			$$.off "pointermove", prevent # but let you drag other times
+			@pointerDown = off
+			@pointerOpen = off
+			@pointerBend = off
+			string.release() for string in @strings
+		
+		# @TODO: pointercancel/blur/Esc
+		
+		$canvas.on "contextmenu", prevent
+		
+		render = =>
+			ctx.clearRect(0, 0, canvas.width, canvas.height)
+			@draw(ctx)
+		
+		do animate = =>
+			render()
+			requestAnimationFrame(animate)
+		
+		do resize = =>
+			canvas.width = document.body.clientWidth
+			canvas.height = @h + @y*2
+		
+		$$.on "resize", resize
 	
 	draw: (ctx)->
 		
-		line = (x1,y1,x2,y2,ss,lw)->
+		line = (x1, y1, x2, y2, ss, lw)->
 			ctx.strokeStyle = ss if ss?
 			ctx.lineWidth = lw if lw?
 			ctx.beginPath()
-			ctx.moveTo(x1,y1)
-			ctx.lineTo(x2,y2)
+			ctx.moveTo(x1, y1)
+			ctx.lineTo(x2, y2)
 			ctx.stroke()
 		
 		ctx.save()
@@ -59,13 +113,13 @@ class @Fretboard
 		
 		# draw board
 		ctx.fillStyle = "#FFF7B2"
-		ctx.fillRect(0,@h*0.1,@w,@h)
+		ctx.fillRect(0, @h*0.1, @w, @h)
 		ctx.fillStyle = "#F3E08C"
-		ctx.fillRect(0,0,@w,@h)
+		ctx.fillRect(0, 0, @w, @h)
 		
 		# check if @pointer is over the fretboard (or Open Strings area)
 		ctx.beginPath()
-		ctx.rect(-OSW,0,@w+OSW,@h)
+		ctx.rect(-OSW, 0, @w+OSW, @h)
 		@pointerOverFB = ctx.isPointInPath(@pointerX, @pointerY)
 		
 		# draw frets
@@ -84,18 +138,18 @@ class @Fretboard
 				@pointerFretW = xp-x
 			
 			fretXs[fret] = x
-			fretWs[fret] = xp-x
+			fretWs[fret] = xp - x
 			
-			line(x,0,x,@h,"#444",2)
+			line(x, 0, x, @h, "#444", 2)
 			
 			ctx.fillStyle = "#FFF"
 			n_inlays = @inlays[fret-1]
 			for i in [0..n_inlays]
 				# i for inlay of course
 				ctx.beginPath()
-				ctx.arc(mx,(i+1/2)/n_inlays*@h,7,0,tau,no)
+				ctx.arc(mx, (i+1/2)/n_inlays*@h, 7, 0, tau, no)
 				ctx.fill()
-				# ctx.fillRect(mx, Math.random()*@h,5,5)
+				# ctx.fillRect(mx, Math.random()*@h, 5, 5)
 			
 			xp = x
 			fret++
@@ -111,26 +165,26 @@ class @Fretboard
 			
 			if @pointerOverFB and s is @pointerString
 				if @pointerDown and @pointerBend
-					line(0,sy,@pointerFretX,mY,"#555",s/3+1)
-					line(@pointerFretX,mY,@w,sy,"rgba(150,255,0,0.8)",(s/3+1)*2)
+					line(0, sy, @pointerFretX, mY, "#555", s/3+1)
+					line(@pointerFretX, mY, @w, sy, "rgba(150, 255, 0, 0.8)", (s/3+1)*2)
 				else
-					line(0,sy,@pointerFretX,sy,"#555",s/3+1)
-					line(@pointerFretX,sy,@w,sy,"rgba(150,255,0,0.8)",(s/3+1)*2)
+					line(0, sy, @pointerFretX, sy, "#555", s/3+1)
+					line(@pointerFretX, sy, @w, sy, "rgba(150, 255, 0, 0.8)", (s/3+1)*2)
 			else
-				line(0,sy,@w,sy,"#555",s/3+1)
+				line(0, sy, @w, sy, "#555", s/3+1)
 			
 			ctx.font = "25px Helvetica"
 			ctx.textAlign = "center"
 			ctx.textBaseline = "middle"
 			ctx.fillStyle = "#000"
-			ctx.fillText(str.text,-OSW/2,sy)
+			ctx.fillText(str.text, -OSW/2, sy)
 		
 		if @pointerOverFB and 0 <= @pointerString < @strings.length
 			if @pointerDown
-				ctx.fillStyle = "rgba(0,255,0,0.5)"
-				unless recNote?.f is @pointerFret and recNote?.s is @pointerString
+				ctx.fillStyle = "rgba(0, 255, 0, 0.5)"
+				unless @rec_note?.f is @pointerFret and @rec_note?.s is @pointerString
 					
-					song.addNote recNote =
+					song.addNote @rec_note =
 						s: @pointerString
 						f: @pointerFret
 					
@@ -140,26 +194,26 @@ class @Fretboard
 					@strings[@pointerString].bend(abs(mY-@pointerStringY))
 				
 			else
-				ctx.fillStyle = "rgba(0,255,0,0.2)"
-				recNote = null
+				ctx.fillStyle = "rgba(0, 255, 0, 0.2)"
+				@rec_note = null
 			
 			b = 5
-			ctx.fillRect(@pointerFretX+b,@pointerStringY-sh/2+b,@pointerFretW,sh-b-b) # @pointerFretW-b*2
+			ctx.fillRect(@pointerFretX+b, @pointerStringY-sh/2+b, @pointerFretW, sh-b-b) # @pointerFretW-b*2
 		
 		# draw notes being played back from keyboard
-		for key, chord of playingNotes
+		for key, chord of @playing_notes
 			for i, note of chord
 				b = 5
 				y = note.s*sh
 				sy = (note.s+1/2)*sh
 				
-				ctx.fillStyle = "rgba(0,255,255,0.2)"
-				ctx.fillRect(fretXs[note.f]+b,y+b,fretWs[note.f],sh-b-b) # fretWs[note.f]-b*2
+				ctx.fillStyle = "rgba(0, 255, 255, 0.2)"
+				ctx.fillRect(fretXs[note.f]+b, y+b, fretWs[note.f], sh-b-b) # fretWs[note.f]-b*2
 			
 				line(
-					fretXs[note.f],sy
-					@w,sy
-					"rgba(0,255,255,0.8)"
+					fretXs[note.f], sy
+					@w, sy
+					"rgba(0, 255, 255, 0.8)"
 					(note.s/3+1)*2
 				)
 		
