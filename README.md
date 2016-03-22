@@ -2,7 +2,7 @@
 Guitar
 ======
 
-It's a virtual guitar record-a-synthsize-amatronic web application.
+It's a virtual guitar record-a-synthesize-amatronic web application.
 
 You can copy and paste entire webpages containing guitar tabs and it'll try to load all it can.
 
@@ -75,6 +75,8 @@ The tablature parser is available as separately as a module [here][tablature-par
     - Why does the selection style change on mouseup?
     
     - Maybe add some padding with `renderer.setPadding`?
+
+* MusicXML? MIDI?
 
 
 [tuna]: https://github.com/Dinahmoe/tuna

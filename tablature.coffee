@@ -113,7 +113,7 @@ parseTabs = (tablature)->
 	
 	# heuristically address the ambiguity where
 	# e.g. --12-- can mean either twelve or one then two
-	squishy = tablature.match(/[03-9]\d[^\r\n]*[-–—]/)?
+	squishy = tablature.match(/[03-9]\d/)?
 	
 	pos = 0
 	cont = yes
