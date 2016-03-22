@@ -76,10 +76,6 @@ The tablature parser is available as separately as a module [here][tablature-par
     
     - Maybe add some padding with `renderer.setPadding`?
 
-* Stretch guitar up to the point of a realistic scale
-  and then center it
-  (currently it's squished)
-
 
 [tuna]: https://github.com/Dinahmoe/tuna
 [tablature-parser]: https://github.com/1j01/tablature-parser

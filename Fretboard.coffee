@@ -21,10 +21,11 @@ class @Fretboard
 			new GuitarString "E2"
 		]
 		
-		@scale = 1716
+		@fret_scale = 1716
 		@x = OSW
+		# @TODO: balance visual weight vertically
 		@y = 60
-		@w = 31337
+		@w = 1920 # not because it's my screen width
 		@h = 300
 		
 		@pointerX = 0
@@ -79,19 +80,22 @@ class @Fretboard
 		
 		$canvas.on "contextmenu", prevent
 		
-		render = =>
+		do animate = =>
 			ctx.clearRect(0, 0, @canvas.width, @canvas.height)
 			@draw(ctx)
-		
-		do animate = =>
-			render()
 			requestAnimationFrame(animate)
 		
-		do resize = =>
-			@canvas.width = document.body.clientWidth
-			@canvas.height = @h + @y*2
-		
-		$$.on "resize", resize
+		$$.on "resize", @resize # :)
+		setTimeout @resize # :/
+		setTimeout @resize # :(
+	
+	resize: =>
+		@canvas.width = @canvas.parentElement.clientWidth
+		@canvas.height = @h + @y*2
+		# @fret_scale = @canvas.width * 1.11
+		# @fret_scale = Math.sqrt(@canvas.width) * 50
+		@fret_scale = Math.min(Math.sqrt(@canvas.width) * 50, 2138)
+		# @x = OSW + Math.max(0, (@canvas.width - @w)/2) # to center it
 	
 	draw: (ctx)->
 		
@@ -131,7 +135,7 @@ class @Fretboard
 		xp = 0
 		fret = 1
 		while fret < @num_frets
-			x += (@scale - x) / 17.817
+			x += (@fret_scale - x) / 17.817
 			mx = (x + xp) / 2
 			
 			if not @pointerBend and not @pointerOpen and mX < x and mX >= xp
