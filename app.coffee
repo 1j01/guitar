@@ -9,17 +9,17 @@
 	toJSON: -> @notes
 	toString: -> song.strings.join("\n")
 	
-	addNote: (recNote)->
-		song.notes.push(recNote)
+	addNote: (rec_note)->
+		song.notes.push(rec_note)
 		
 		# @TODO: go through Tablature.stringify()
 		
-		dashes = ["ERROR )","-","--","---","----"]["#{recNote.f}".length]
+		dashes = ["","-","--","---","----"]["#{rec_note.f}".length]
 		for string, s in song.strings
-			song.strings[s] += if s is recNote.s then recNote.f else dashes
+			song.strings[s] += if s is rec_note.s then rec_note.f else dashes
 			song.strings[s] += "-" # additional dash to space notes apart
 		
-		$tablature_error.text("").hide()
+		$tablature_error.dismiss()
 		
 		tablature_editor.editor.setValue("#{song}", 1)
 		
@@ -28,15 +28,15 @@
 
 song.clear()
 
-$tablature_error = $("<div class='error'/>").appendTo("body").hide()
-$tablature_editor = $("<div class='tablature-editor'/>").appendTo("body")
-tablature_editor = new TablatureEditor($tablature_editor[0])
-tablature_editor.showPlaybackPosition(song.pos)
-
 @fretboard = new Fretboard
+$(fretboard.canvas).appendTo(".fretboard-area")
 
+$tablature_error = $(".tablature-error")
+$tablature_error.dismiss = -> @hide().attr("aria-hidden", "true").text("")
+$tablature_error.message = (message)-> @show().attr("aria-hidden", "false").text(message)
 
-# # # # # # # # # # # # # # # # # # # # # # 
+tablature_editor = new TablatureEditor($(".tablature-editor")[0])
+tablature_editor.showPlaybackPosition(song.pos)
 
 
 $$ = $(window)
@@ -107,22 +107,22 @@ tablature_editor.editor.on "blur", ->
 			res = Tablature.parse(text.replace(/\ <</g, ""))
 		catch error
 			if error.blocks
-				$tablature_error.text(error.message_only).show()
+				$tablature_error.message(error.message_only)
 				tablature_editor.editor.setValue(error.blocks, -1)
 				index = error.blocks.indexOf(error.misaligned_block)
 				unless index is -1
 					position = tablature_editor.editor.getSession().getDocument().indexToPosition(index)
 					tablature_editor.editor.scrollToRow(position.row)
 			else
-				$tablature_error.text(error.message).show()
+				$tablature_error.message(error.message)
 		
 		if res
 			song.clear()
 			song.notes = res
 			song.strings = Tablature.stringify(res).split("\n")
 			
-			$tablature_error.text("").hide()
+			$tablature_error.dismiss()
 			tablature_editor.editor.setValue("#{song}", -1)
 			tablature_editor.showPlaybackPosition(song.pos)
 	else
-		$tablature_error.text("").hide()
+		$tablature_error.dismiss()

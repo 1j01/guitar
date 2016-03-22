@@ -19,7 +19,7 @@ The tablature parser is available as separately as a module [here][tablature-par
     
     - Multitouch
 
-* Make web application self-explanatory and accessible
+* Make web application self-explanatory and test accessibility
 
 * Make bending (MMB) less ridiculous
 

@@ -6,6 +6,7 @@
 			html, body {
 				padding: 0;
 				margin: 3px;
+				font-family: sans-serif;
 			}
 			.tablature-editor {
 				width: 100%;
@@ -29,17 +30,9 @@
 				background: rgba(0, 255, 255, 0.5);
 			}
 			.error {
-				font-family: sans-serif;
 				background: #E9311E;
 				color: rgb(255, 255, 255);
 				padding: 0.2em;
-			}
-			html, body, canvas {
-				-moz-user-select: -moz-none;
-				-khtml-user-select: none;
-				-webkit-user-select: none;
-				-ms-user-select: none;
-				user-select: none;
 			}
 		</style>
 		<script src="lib/jquery.min.js"></script>
@@ -50,6 +43,14 @@
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
 	</head>
 	<body>
+		<h1>Guitar Recorder</h1>
+		<h2>Interactive Fretboard</h2>
+		<div class="fretboard-area area"></div>
+		<h2>Tablature Editor</h2>
+		<div class="tablature-area area">
+			<div class="tablature-error error" role="alert" aria-hidden="true" style="display: none"></div>
+			<div class="tablature-editor"></div>
+		</div>
 		<script src="helpers.coffee" type="text/coffeescript"></script>
 		<script src="audio-setup.coffee" type="text/coffeescript"></script>
 		<script src="tablature.coffee" type="text/coffeescript"></script>

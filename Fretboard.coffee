@@ -5,7 +5,9 @@ class @Fretboard
 	$$ = $(window)
 	
 	num_frets: 40
-	# inlays: [0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 190, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3] # <--
+	# inlays: (~~(Math.random() * 4) for [0..40])
+	# inlays: [3, 0, 1, 1, 1, 1, 0, 3, 0, 3, 3, 1, 3, 2, 1, 2, 0, 0, 3, 0, 2, 1, 0, 0, 2, 0, 2, 1, 2, 2, 3, 0, 2, 0, 1, 1, 2, 2, 2, 0, 1]
+	# inlays: [2, 3, 1, 0, 1, 2, 3, 2, 1, 0, 0, 5, 0, 0, 1, 2, 0, 3, 0, 2, 1, 0, 0, 5, 0, 0, 1, 2, 0, 3, 0, 2, 1, 0, 0] # rad dots, yo
 	inlays: [0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2] # most common
 	# inlays: [0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 2, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 2] # less common
 	
@@ -41,10 +43,10 @@ class @Fretboard
 		
 		@playing_notes = {}
 		
-		$canvas = $("<canvas tabindex=0 touch-action=pan-y/>").appendTo("body")
-		canvas = $canvas[0]
+		$canvas = $("<canvas tabindex=0 touch-action=pan-y/>")
+		@canvas = $canvas[0]
 		
-		ctx = canvas.getContext("2d")
+		ctx = @canvas.getContext("2d")
 		
 		prevent = (e)->
 			e.preventDefault()
@@ -78,7 +80,7 @@ class @Fretboard
 		$canvas.on "contextmenu", prevent
 		
 		render = =>
-			ctx.clearRect(0, 0, canvas.width, canvas.height)
+			ctx.clearRect(0, 0, @canvas.width, @canvas.height)
 			@draw(ctx)
 		
 		do animate = =>
@@ -86,8 +88,8 @@ class @Fretboard
 			requestAnimationFrame(animate)
 		
 		do resize = =>
-			canvas.width = document.body.clientWidth
-			canvas.height = @h + @y*2
+			@canvas.width = document.body.clientWidth
+			@canvas.height = @h + @y*2
 		
 		$$.on "resize", resize
 	
