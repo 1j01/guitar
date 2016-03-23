@@ -38,6 +38,21 @@ $tablature_error.message = (message)-> @show().attr("aria-hidden", "false").text
 tablature_editor = new TablatureEditor($(".tablature-editor")[0])
 tablature_editor.showPlaybackPosition(song.pos)
 
+$theme = $(".theme")
+
+try
+	theme = Fretboard.themes[localStorage.guitar_theme]
+	fretboard.theme = theme if theme
+
+for theme_name, theme of Fretboard.themes
+	$("<option>")
+		.text(theme_name)
+		.attr(value: theme_name, selected: Fretboard.themes[theme_name] is fretboard.theme)
+		.appendTo($theme)
+
+$theme.on "change", ->
+	fretboard.theme = Fretboard.themes[$theme.val()]
+	try localStorage.guitar_theme = $theme.val()
 
 $$ = $(window)
 
@@ -63,7 +78,7 @@ $$.on "keydown", (e)->
 	else if key is 32 # Spacebar
 		sustain = on
 	else
-		unless e.target.tagName.match /textarea|input/i
+		unless e.target.tagName.match /textarea|input|select/i
 			
 			return if fretboard.playing_notes[key] # prevent repeat
 			play = song.notes[song.pos]

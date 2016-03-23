@@ -11,6 +11,45 @@ class @Fretboard
 	inlays: [0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2] # most common
 	# inlays: [0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 2, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 2] # less common
 	
+	@themes:
+		"Tan Classic":
+			fretboard: "#F3E08C"
+			fretboard_side: "#FFF7B2"
+			inlays: "#FFF"
+			frets: "#444"
+			strings: "#555"
+			shadow: off
+		"Tan":
+			fretboard: "#F3E08C"
+			fretboard_side: "#FFF7B2"
+			inlays: "#FFF"
+			frets: "#ddd"
+			strings: "#555"
+		"Orange":
+			fretboard: "#E8B16B"
+			fretboard_side: "#F7CC97"
+			inlays: "#FFF"
+			frets: "#ddd"
+			strings: "#555"
+		"Dark Gray":
+			fretboard: "#333"
+			fretboard_side: "#222"
+			inlays: "#FFF"
+			frets: "lightgray"
+			strings: "#777"
+		"Tinted Dark":
+			fretboard: "#433"
+			fretboard_side: "#322"
+			inlays: "#FFF"
+			frets: "lightgray"
+			strings: "#777"
+		"Gilded Dark":
+			fretboard: "#381411"
+			fretboard_side: "#1C0000"
+			inlays: "#FFF"
+			frets: "#EAE8C2"
+			strings: "#E0DC98"
+	
 	constructor: ->
 		@strings = [
 			new GuitarString "E4"
@@ -39,6 +78,8 @@ class @Fretboard
 		@pointerFretW = -OSW*1.8
 		@pointerString = 0
 		@pointerStringY = 0
+		
+		@theme = Fretboard.themes["Dark Gray"]
 		
 		@rec_note = null
 		
@@ -118,9 +159,9 @@ class @Fretboard
 			@pointerFretW = -OSW*1.8
 		
 		# draw board
-		ctx.fillStyle = "#FFF7B2"
+		ctx.fillStyle = @theme.fretboard_side
 		ctx.fillRect(0, @h*0.1, @w, @h)
-		ctx.fillStyle = "#F3E08C"
+		ctx.fillStyle = @theme.fretboard
 		ctx.fillRect(0, 0, @w, @h)
 		
 		# check if @pointer is over the fretboard (or Open Strings area)
@@ -146,9 +187,12 @@ class @Fretboard
 			fretXs[fret] = x
 			fretWs[fret] = xp - x
 			
-			line(x, 0, x, @h, "#444", 2)
+			unless @theme.shadow is off
+				# line(x, 0, x, @h, "rgba(0, 0, 0, 0.5)", 5)
+				line(x+0.5, 0, x+0.5, @h, "rgba(0, 0, 0, 0.8)", 5)
+			line(x, 0, x, @h, @theme.frets, 3)
 			
-			ctx.fillStyle = "#FFF"
+			ctx.fillStyle = @theme.inlays
 			n_inlays = @inlays[fret-1]
 			for i in [0..n_inlays]
 				# i for inlay of course
@@ -171,13 +215,13 @@ class @Fretboard
 			
 			if @pointerOverFB and s is @pointerString
 				if @pointerDown and @pointerBend
-					line(0, sy, @pointerFretX, mY, "#555", s/3+1)
+					line(0, sy, @pointerFretX, mY, @theme.strings, s/3+1)
 					line(@pointerFretX, mY, @w, sy, "rgba(150, 255, 0, 0.8)", (s/3+1)*2)
 				else
-					line(0, sy, @pointerFretX, sy, "#555", s/3+1)
+					line(0, sy, @pointerFretX, sy, @theme.strings, s/3+1)
 					line(@pointerFretX, sy, @w, sy, "rgba(150, 255, 0, 0.8)", (s/3+1)*2)
 			else
-				line(0, sy, @w, sy, "#555", s/3+1)
+				line(0, sy, @w, sy, @theme.strings, s/3+1)
 			
 			ctx.font = "25px Helvetica"
 			ctx.textAlign = "center"

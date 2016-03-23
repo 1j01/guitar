@@ -8,6 +8,11 @@
 				margin: 3px;
 				font-family: sans-serif;
 			}
+			label {
+				font-size: 1rem;
+				font-weight: normal;
+				float: right;
+			}
 			.tablature-editor {
 				width: 100%;
 				height: 200px;
@@ -44,7 +49,9 @@
 	</head>
 	<body>
 		<h1>Guitar Recorder</h1>
-		<h2>Interactive Fretboard</h2>
+		<h2>Interactive Fretboard
+			<label>Theme: <select class="theme"></select></label>
+		</h2>
 		<div class="fretboard-area area"></div>
 		<h2>Tablature Editor</h2>
 		<div class="tablature-area area">
