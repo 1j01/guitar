@@ -227,7 +227,7 @@ class @Fretboard
 			ctx.textAlign = "center"
 			ctx.textBaseline = "middle"
 			ctx.fillStyle = "#000"
-			ctx.fillText(str.text, -OSW/2, sy)
+			ctx.fillText(str.label, -OSW/2, sy)
 		
 		if @pointerOverFB and 0 <= @pointerString < @strings.length
 			if @pointerDown

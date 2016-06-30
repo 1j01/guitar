@@ -7,6 +7,7 @@ It's a virtual guitar record-a-synthesize-amatronic web application.
 You can copy and paste entire webpages containing guitar tabs and it'll try to load all it can.
 
 Uses [tuna][] audio effects library.
+The guitar synthesis algorithm is from [guitar-synth](https://github.com/getinstinct/guitar-synth).
 
 The tablature parser is available as separately as a module [here][tablature-parser].
 
@@ -31,20 +32,14 @@ The tablature parser is available as separately as a module [here][tablature-par
 * Record, parse, and play back articulations
   such as slides, bends, vibratos, hammer-ons, and pull-offs
 
+* Different sound for sliding than for pressing
+
 * Support for different tunings
 
-* Improve synth
+* Allow configuring the effects chain
+  (at least toggle distortion on/off)
 
-    - Try to make it actually sound like a guitar
-    
-    - Fade out a master gain to zero after a period of inactivity
-      so the "tab is playing audio" icon can go away
-
-    - Find a better way to fade out
-      (that doesn't end abruptly especially when amplified)
-
-    - Allow configuring the effects chain
-      (at least toggle distortion on/off)
+* Include demo tabs (probably in a dropdown)
 
 * Tablature editor
     

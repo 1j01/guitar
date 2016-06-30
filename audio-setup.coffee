@@ -11,7 +11,7 @@ connect = (nodes...)->
 @pre = actx.createGain()
 pre.gain.value = 0.2 # guitar volume
 @post = actx.createGain()
-post.gain.value = 0.3 # master volume
+post.gain.value = 1 # master volume
 
 # slap = new SlapbackDelay()
 
@@ -20,7 +20,7 @@ drive = new tuna.Overdrive
 	drive: 0.1               # 0 to 1
 	curveAmount: 0.6         # 0 to 1
 	algorithmIndex: 2        # 0 to 5, selects one of the drive algorithms
-	bypass: 0
+	bypass: 1
 
 wahwah = new tuna.WahWah
 	automode: off                # on/off
@@ -37,13 +37,13 @@ phaser = new tuna.Phaser
 	feedback: 0.9                  # 0 to 1+
 	stereoPhase: 30                # 0 to 180
 	baseModulationFrequency: 700   # 500 to 1500
-	bypass: 0
+	bypass: 1
 
 chorus = new tuna.Chorus
 	rate: 1.5          # 0.01 to 8+
 	feedback: 0.2      # 0 to 1+
 	delay: 0.0045      # 0 to 1
-	bypass: 0
+	bypass: 1
 
 ###
 tremolo = new tuna.Tremolo
