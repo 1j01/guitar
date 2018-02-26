@@ -2,17 +2,21 @@
 PLAYING_DECAY = 0.00001
 RELEASED_DECAY = PLAYING_DECAY * 20
 
+# PLAYING_DECAY = 0.1
+# RELEASED_DECAY = 0.8
+
 class @GuitarString
 	constructor: (@base_note_str)->
 		@label = @base_note_str[0]
 		@base_note_n = getNoteN(@base_note_str)
 		@base_freq = getFrequency(@base_note_n)
 		
+		@data = [0]
 		@script_processor = actx.createScriptProcessor(1024, 1, 1)
 		@script_processor.onaudioprocess = (e)=>
-			data = e.outputBuffer.getChannelData(0)
-			for i in [0..data.length]
-				data[i] = @getSampleData()
+			@data = e.outputBuffer.getChannelData(0)
+			for i in [0..@data.length]
+				@data[i] = @getSampleData()
 		@script_processor.connect(pre)
 		
 		@started = no
@@ -32,11 +36,15 @@ class @GuitarString
 
 		@current += (@period[@periodIndex] - @current) * @decay
 		@period[@periodIndex] = @current
+		# @period[@periodIndex] = @current * (1 - @decay * Math.random())
+		# @period[@periodIndex] = @current * (1 - @decay/5 * Math.random())
+		# @period[@periodIndex] = if Math.random() < 0.5 then @current else -@current
 
 		++@periodIndex
 		++@cumulativeIndex
 
 		@decay *= if @playing then (1 - PLAYING_DECAY) else (1 - RELEASED_DECAY)
+		# @decay = if @playing then (1 - PLAYING_DECAY) else (1 - RELEASED_DECAY)
 
 		return @current
 	
@@ -68,7 +76,9 @@ class @GuitarString
 		return
 	
 	bend: (bend)->
-		# FIXME: should be a smooth glissando
+		# FIXME/TODO: should be a smooth glissando
+		# maybe make the @period the max that it needs to be (either in general for all time, or during a transition)
+		# and transition between treating it one length to a new length?
 		note_n = @base_note_n + @fret
 		@setFrequency(getFrequency(note_n) + bend, note_n)
 		return

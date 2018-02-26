@@ -140,7 +140,7 @@ class @Fretboard
 	
 	draw: (ctx)->
 		
-		line = (x1, y1, x2, y2, ss, lw)->
+		drawLine = (x1, y1, x2, y2, ss, lw)->
 			ctx.strokeStyle = ss if ss?
 			ctx.lineWidth = lw if lw?
 			ctx.beginPath()
@@ -148,6 +148,78 @@ class @Fretboard
 			ctx.lineTo(x2, y2)
 			ctx.stroke()
 		
+		# # drawVibratingString = (x1, y1, x2, y2, vibrationSemiAmplitudeInPixels, ss, lw)->
+		# drawVibratingString = (x1, y1, x2, y2, yOff, ss, lw)->
+		# 	ctx.save()
+		# 	ctx.globalAlpha = 0.1
+		# 	for [0..10]
+		# 		ctx.strokeStyle = ss if ss?
+		# 		ctx.lineWidth = lw if lw?
+		# 		ctx.beginPath()
+		# 		ctx.moveTo(x1, y1)
+		# 		# yOff = (Math.random() * 2 - 1) * vibrationSemiAmplitudeInPixels
+		# 		# ctx.bezierCurveTo(x1, y1+yOff, x2, y2+yOff, x2, y2)
+		# 		ctx.quadraticCurveTo((x1+x2)/2, (y1+y2)/2+yOff, x2, y2)
+		# 		ctx.stroke()
+		# 	ctx.restore()
+		
+		drawBentLine = (x1, y1, x2, y2, controlPointXOffset, controlPointYOffset, ss, lw)->
+			ctx.strokeStyle = ss if ss?
+			ctx.lineWidth = lw if lw?
+			ctx.beginPath()
+			ctx.moveTo(x1, y1)
+			ctx.quadraticCurveTo(
+				(x1+x2)/2 + controlPointXOffset
+				(y1+y2)/2 + controlPointYOffset
+				x2, y2
+			)
+			ctx.stroke()
+
+		drawVibratingString = (x1, y1, x2, y2, stringAmplitudeData, ss, lw)->
+			# amplitudeToPixels = 1000000 # heheh
+			# amplitudeToPixels = 1
+			# amplitudeToPixels = 100
+			# amplitudeToPixels = 1
+			# amplitudeToPixels = 10
+			amplitudeToPixels = 3
+			# limit the amplitude it's considered to be at, to keep it physically plausible,
+			# especially since we're using a wah-wah effect to make it sound smoother at the starts of plucks,
+			# which isn't part of the audio/PCM/amplitude data we're using, because it's straight from the synthesizer
+			maxAmplitude = 0.005
+			# could do the limit in pixels instead maybe
+			ctx.save()
+			numRenders = 21 # 10
+			ctx.globalAlpha = 1 / numRenders # is this technically accurate? would it be if we used additive blending?
+			for i in [0...numRenders]
+				xLength = x2 - x1
+
+				# # amplitude = stringAmplitudeData[~~(Math.random() * stringAmplitudeData.length)]
+				# amplitude = stringAmplitudeData[~~(i / numRenders * stringAmplitudeData.length)]
+
+				# index = ~~(Math.random() * stringAmplitudeData.length)
+				index = ~~(i / numRenders * stringAmplitudeData.length)
+				nextIndex = (index + 1) % stringAmplitudeData.length
+
+				deltaAmplitude = (stringAmplitudeData[nextIndex] - stringAmplitudeData[index])
+				deltaAmplitude = (stringAmplitudeData[nextIndex] - stringAmplitudeData[index])
+				# amplitude difference / delta, or an amplitude of sound but not the *modeled* 'position of the string' *in the synth*?
+
+				# yBend = amplitude * amplitudeToPixels / xLength # heheh
+				# yBend = amplitude * amplitudeToPixels * xLength
+				# yBend = amplitude * amplitudeToPixels * Math.log(xLength)
+				# yBend = Math.exp(amplitude, 0.2) * amplitudeToPixels * xLength
+				# yBend = deltaAmplitude * amplitudeToPixels * xLength
+				# limit the amplitude it's considered to be at, to keep it physically plausible,
+				# especially since we're using a wah-wah effect to make it sound smoother at the starts of plucks,
+				# which isn't part of the audio/PCM/amplitude data we're using, because it's straight from the synthesizer
+				maxAmplitude = 0.005
+				yBend = Math.min(Math.max(deltaAmplitude, -maxAmplitude), maxAmplitude) * amplitudeToPixels * xLength
+
+				# console.log amplitude, yBend
+				console.log deltaAmplitude, yBend
+				drawBentLine(x1, y1, x2, y2, 0, yBend, ss, lw)
+			ctx.restore()
+
 		ctx.save()
 		ctx.translate(@x, @y)
 		mX = @pointerX - @x
@@ -188,9 +260,9 @@ class @Fretboard
 			fretWs[fret] = xp - x
 			
 			unless @theme.shadow is off
-				# line(x, 0, x, @h, "rgba(0, 0, 0, 0.5)", 5)
-				line(x+0.5, 0, x+0.5, @h, "rgba(0, 0, 0, 0.8)", 5)
-			line(x, 0, x, @h, @theme.frets, 3)
+				# drawLine(x, 0, x, @h, "rgba(0, 0, 0, 0.5)", 5)
+				drawLine(x+0.5, 0, x+0.5, @h, "rgba(0, 0, 0, 0.8)", 5)
+			drawLine(x, 0, x, @h, @theme.frets, 3)
 			
 			ctx.fillStyle = @theme.inlays
 			n_inlays = @inlays[fret-1]
@@ -204,6 +276,12 @@ class @Fretboard
 			xp = x
 			fret++
 		
+		# TODO: base the drawing of the strings off of the state of the strings only
+		# vibrating only after the furthest to the right finger hold
+		# so playback visualization makes physical sense (esp. when playing back and playing via the fretboard at the same time and bending)
+		# (and possibly model multiple finger holds in the string state so that it can draw between bent holds before the rightmost finger hold even tho they'd be ineffectual)
+		# and TODO: change the pitch of the synth when you release a note (to open, or the nearest remaining finger hold) (without reactuating, i.e. a pull-off (and not a flick-off))
+
 		# draw strings
 		sh = @h/@strings.length
 		unless @pointerBend # (don't switch strings while bending)
@@ -214,14 +292,11 @@ class @Fretboard
 			sy = (s+1/2)*sh
 			
 			if @pointerOverFB and s is @pointerString
-				if @pointerDown and @pointerBend
-					line(0, sy, @pointerFretX, mY, @theme.strings, s/3+1)
-					line(@pointerFretX, mY, @w, sy, "rgba(150, 255, 0, 0.8)", (s/3+1)*2)
-				else
-					line(0, sy, @pointerFretX, sy, @theme.strings, s/3+1)
-					line(@pointerFretX, sy, @w, sy, "rgba(150, 255, 0, 0.8)", (s/3+1)*2)
+				midpointY = (if @pointerDown and @pointerBend then mY else sy)
+				drawLine(0, sy, @pointerFretX, midpointY, @theme.strings, s/3+1)
+				drawVibratingString(@pointerFretX, midpointY, @w, sy, str.data, "rgba(150, 255, 0, 0.8)", (s/3+1)*2)
 			else
-				line(0, sy, @w, sy, @theme.strings, s/3+1)
+				drawLine(0, sy, @w, sy, @theme.strings, s/3+1)
 			
 			ctx.font = "25px Helvetica"
 			ctx.textAlign = "center"
@@ -260,9 +335,10 @@ class @Fretboard
 				ctx.fillStyle = "rgba(0, 255, 255, 0.2)"
 				ctx.fillRect(fretXs[note.f]+b, y+b, fretWs[note.f], sh-b-b) # fretWs[note.f]-b*2
 			
-				line(
+				drawVibratingString(
 					fretXs[note.f], sy
 					@w, sy
+					@strings[note.s].data
 					"rgba(0, 255, 255, 0.8)"
 					(note.s/3+1)*2
 				)
