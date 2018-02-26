@@ -66,7 +66,12 @@ class @Fretboard
 		@y = 60
 		@w = 1920 # not because it's my screen width
 		@h = 300
-		
+
+		# NOTE: frets are defined as an X of the fret, but the width of the space between it and the *previous* fret
+		# (the width of the space you can press down on to hold the string against a given fret)
+		@openFretW = OSW*1.8
+		@openFretX = 0
+
 		@pointerX = 0
 		@pointerY = 0
 		@pointerDown = off
@@ -74,8 +79,8 @@ class @Fretboard
 		@pointerBend = off
 		
 		@pointerFret = 0
-		@pointerFretX = 0
-		@pointerFretW = -OSW*1.8
+		@pointerFretX = @openFretX
+		@pointerFretW = @openFretW
 		@pointerString = 0
 		@pointerStringY = 0
 		
@@ -227,8 +232,8 @@ class @Fretboard
 		
 		unless @pointerBend
 			@pointerFret = 0
-			@pointerFretX = 0
-			@pointerFretW = -OSW*1.8
+			@pointerFretX = @openFretX
+			@pointerFretW = @openFretW
 		
 		# draw board
 		ctx.fillStyle = @theme.fretboard_side
@@ -242,8 +247,8 @@ class @Fretboard
 		@pointerOverFB = ctx.isPointInPath(@pointerX, @pointerY)
 		
 		# draw frets
-		fretXs = [@pointerFretX]
-		fretWs = [@pointerFretW]
+		fretXs = [@openFretX]
+		fretWs = [@openFretW]
 		x = 0
 		xp = 0
 		fret = 1
@@ -254,10 +259,10 @@ class @Fretboard
 			if not @pointerBend and not @pointerOpen and mX < x and mX >= xp
 				@pointerFret = fret
 				@pointerFretX = x
-				@pointerFretW = xp-x
+				@pointerFretW = x - xp
 			
 			fretXs[fret] = x
-			fretWs[fret] = xp - x
+			fretWs[fret] = x - xp
 			
 			unless @theme.shadow is off
 				# drawLine(x, 0, x, @h, "rgba(0, 0, 0, 0.5)", 5)
@@ -323,9 +328,9 @@ class @Fretboard
 				@rec_note = null
 			
 			b = 5
-			ctx.fillRect(@pointerFretX+b, @pointerStringY-sh/2+b, @pointerFretW, sh-b-b) # @pointerFretW-b*2
+			ctx.fillRect(@pointerFretX+b, @pointerStringY-sh/2+b, -@pointerFretW, sh-b-b) # @pointerFretW-b*2
 		
-		# draw notes being played back from keyboard
+		# draw notes being played back from the tablature / recorded song
 		for key, chord of @playing_notes
 			for i, note of chord
 				b = 5
@@ -333,7 +338,7 @@ class @Fretboard
 				sy = (note.s+1/2)*sh
 				
 				ctx.fillStyle = "rgba(0, 255, 255, 0.2)"
-				ctx.fillRect(fretXs[note.f]+b, y+b, fretWs[note.f], sh-b-b) # fretWs[note.f]-b*2
+				ctx.fillRect(fretXs[note.f]+b, y+b, -fretWs[note.f], sh-b-b) # fretWs[note.f]-b*2
 			
 				drawVibratingString(
 					fretXs[note.f], sy
