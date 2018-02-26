@@ -145,7 +145,7 @@ class @Fretboard
 	
 	draw: (ctx)->
 		
-		drawLine = (x1, y1, x2, y2, ss, lw)->
+		drawLine = (x1, y1, x2, y2, ss, lw)=>
 			ctx.strokeStyle = ss if ss?
 			ctx.lineWidth = lw if lw?
 			ctx.beginPath()
@@ -153,22 +153,7 @@ class @Fretboard
 			ctx.lineTo(x2, y2)
 			ctx.stroke()
 		
-		# # drawVibratingString = (x1, y1, x2, y2, vibrationSemiAmplitudeInPixels, ss, lw)->
-		# drawVibratingString = (x1, y1, x2, y2, yOff, ss, lw)->
-		# 	ctx.save()
-		# 	ctx.globalAlpha = 0.1
-		# 	for [0..10]
-		# 		ctx.strokeStyle = ss if ss?
-		# 		ctx.lineWidth = lw if lw?
-		# 		ctx.beginPath()
-		# 		ctx.moveTo(x1, y1)
-		# 		# yOff = (Math.random() * 2 - 1) * vibrationSemiAmplitudeInPixels
-		# 		# ctx.bezierCurveTo(x1, y1+yOff, x2, y2+yOff, x2, y2)
-		# 		ctx.quadraticCurveTo((x1+x2)/2, (y1+y2)/2+yOff, x2, y2)
-		# 		ctx.stroke()
-		# 	ctx.restore()
-		
-		drawBentLine = (x1, y1, x2, y2, controlPointXOffset, controlPointYOffset, ss, lw)->
+		drawBentLine = (x1, y1, x2, y2, controlPointXOffset, controlPointYOffset, ss, lw)=>
 			ctx.strokeStyle = ss if ss?
 			ctx.lineWidth = lw if lw?
 			ctx.beginPath()
@@ -180,48 +165,33 @@ class @Fretboard
 			)
 			ctx.stroke()
 
-		drawVibratingString = (x1, y1, x2, y2, stringAmplitudeData, ss, lw)->
-			# amplitudeToPixels = 1000000 # heheh
-			# amplitudeToPixels = 1
-			# amplitudeToPixels = 100
-			# amplitudeToPixels = 1
-			# amplitudeToPixels = 10
+		drawVibratingString = (x1, y1, x2, y2, stringAmplitudeData, ss, lw)=>
 			amplitudeToPixels = 3
 			# limit the amplitude it's considered to be at, to keep it physically plausible,
 			# especially since we're using a wah-wah effect to make it sound smoother at the starts of plucks,
 			# which isn't part of the audio/PCM/amplitude data we're using, because it's straight from the synthesizer
 			maxAmplitude = 0.005
-			# could do the limit in pixels instead maybe
+			# could do the limit in pixels instead (which could be nicer)
 			ctx.save()
-			numRenders = 21 # 10
+			numRenders = 21 # could probably afford to be smaller
+			# also, my intuition here is that an odd number might avoid lining up with harmonics somewhat (when not using random sampling)
+			# but it might just scale *where* it lines up / affect what frequencies resonate
 			ctx.globalAlpha = 1 / numRenders # is this technically accurate? would it be if we used additive blending?
 			for i in [0...numRenders]
 				xLength = x2 - x1
 
-				# # amplitude = stringAmplitudeData[~~(Math.random() * stringAmplitudeData.length)]
-				# amplitude = stringAmplitudeData[~~(i / numRenders * stringAmplitudeData.length)]
-
 				# index = ~~(Math.random() * stringAmplitudeData.length)
 				index = ~~(i / numRenders * stringAmplitudeData.length)
 				nextIndex = (index + 1) % stringAmplitudeData.length
+				# TODO: try using not-right-next-to-each-other indexes
+				# to try to make it fuller looking
 
 				deltaAmplitude = (stringAmplitudeData[nextIndex] - stringAmplitudeData[index])
 				deltaAmplitude = (stringAmplitudeData[nextIndex] - stringAmplitudeData[index])
 				# amplitude difference / delta, or an amplitude of sound but not the *modeled* 'position of the string' *in the synth*?
 
-				# yBend = amplitude * amplitudeToPixels / xLength # heheh
-				# yBend = amplitude * amplitudeToPixels * xLength
-				# yBend = amplitude * amplitudeToPixels * Math.log(xLength)
-				# yBend = Math.exp(amplitude, 0.2) * amplitudeToPixels * xLength
-				# yBend = deltaAmplitude * amplitudeToPixels * xLength
-				# limit the amplitude it's considered to be at, to keep it physically plausible,
-				# especially since we're using a wah-wah effect to make it sound smoother at the starts of plucks,
-				# which isn't part of the audio/PCM/amplitude data we're using, because it's straight from the synthesizer
-				maxAmplitude = 0.005
 				yBend = Math.min(Math.max(deltaAmplitude, -maxAmplitude), maxAmplitude) * amplitudeToPixels * xLength
 
-				# console.log amplitude, yBend
-				# console.log deltaAmplitude, yBend
 				drawBentLine(x1, y1, x2, y2, 0, yBend, ss, lw)
 			ctx.restore()
 
@@ -276,7 +246,7 @@ class @Fretboard
 				ctx.beginPath()
 				ctx.arc(mx, (i+1/2)/n_inlays*@h, 7, 0, tau, no)
 				ctx.fill()
-				# ctx.fillRect(mx, Math.random()*@h, 5, 5)
+				# ctx.fillRect(mx, Math.cos(mx)*@h, 5, 5) # faux microtonal aesthetic
 			
 			xp = x
 			fret++
