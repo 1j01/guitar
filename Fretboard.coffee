@@ -195,6 +195,25 @@ class @Fretboard
 				drawBentLine(x1, y1, x2, y2, 0, yBend, ss, lw)
 			ctx.restore()
 
+		drawFingerHoldOrOpenNote = (fretX, fretW, stringY, stringHeight, stringBendY=0)=>
+			ctx.beginPath()
+			unless fretX is @openFretX
+				# ctx.ellipse(
+				# 	fretX - fretW/2 # center x
+				# 	stringY + stringBendY # center y
+				# 	stringHeight*0.5 # radius x
+				# 	stringHeight*0.4 # radius y
+				# 	0 # rotation
+				# 	0, Math.PI * 2 # start, end
+				# )
+				# ctx.fillRect(fretX - fretW, stringY - stringHeight/2, fretW, stringHeight)
+				ctx.fillRect(fretX + 5 - fretW, stringY - stringHeight/2, fretW - 5, stringHeight)
+			# ctx.fillRect(fretX, stringY - stringHeight/2, 5, stringHeight)
+			ctx.fillRect(fretX - 5, stringY - stringHeight/2, 10, stringHeight)
+			# ctx.fillRect(fretX + 2, stringY - stringHeight/2, 3, stringHeight)
+			# ctx.fillRect(fretX, stringY + stringBendY - stringHeight/2, 5, stringHeight)
+			ctx.fill()
+
 		ctx.save()
 		ctx.translate(@x, @y)
 		mX = @pointerX - @x
@@ -297,18 +316,16 @@ class @Fretboard
 				ctx.fillStyle = "rgba(0, 255, 0, 0.2)"
 				@rec_note = null
 			
-			b = 5
-			ctx.fillRect(@pointerFretX+b, @pointerStringY-sh/2+b, -@pointerFretW, sh-b-b) # @pointerFretW-b*2
+			# drawFingerHoldOrOpenNote(@pointerFretX, @pointerFretW, (if @pointerBend then mY else @pointerStringY), sh)
+			drawFingerHoldOrOpenNote(@pointerFretX, @pointerFretW, @pointerStringY, sh, (if @pointerBend then mY-@pointerStringY else 0))
 		
 		# draw notes being played back from the tablature / recorded song
 		for key, chord of @playing_notes
 			for i, note of chord
-				b = 5
-				y = note.s*sh
 				sy = (note.s+1/2)*sh
 				
 				ctx.fillStyle = "rgba(0, 255, 255, 0.2)"
-				ctx.fillRect(fretXs[note.f]+b, y+b, -fretWs[note.f], sh-b-b) # fretWs[note.f]-b*2
+				drawFingerHoldOrOpenNote(fretXs[note.f], fretWs[note.f], sy, sh)
 			
 				drawVibratingString(
 					fretXs[note.f], sy
