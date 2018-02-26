@@ -19,36 +19,51 @@ class @Fretboard
 			frets: "#444"
 			strings: "#555"
 			shadow: off
+			scale_highlight_note_background: "green"
+			scale_highlight_note_text: "white"
 		"Tan":
 			fretboard: "#F3E08C"
 			fretboard_side: "#FFF7B2"
 			inlays: "#FFF"
 			frets: "#ddd"
 			strings: "#555"
+			scale_highlight_note_background: "green"
+			scale_highlight_note_text: "white"
 		"Orange":
 			fretboard: "#E8B16B"
 			fretboard_side: "#F7CC97"
 			inlays: "#FFF"
 			frets: "#ddd"
 			strings: "#555"
+			scale_highlight_note_background: "orangered"
+			scale_highlight_note_text: "white"
 		"Dark Gray":
 			fretboard: "#333"
 			fretboard_side: "#222"
 			inlays: "#FFF"
 			frets: "lightgray"
 			strings: "#777"
+			scale_highlight_note_background: "#555"
+			scale_highlight_note_text: "white"
 		"Tinted Dark":
 			fretboard: "#433"
 			fretboard_side: "#322"
 			inlays: "#FFF"
 			frets: "lightgray"
 			strings: "#777"
+			# probably shouldn't have one theme where you can't see the note highlights on the open strings
+			# scale_highlight_note_background: "white"
+			# scale_highlight_note_text: "black"
+			scale_highlight_note_background: "black"
+			scale_highlight_note_text: "white"
 		"Gilded Dark":
 			fretboard: "#381411"
 			fretboard_side: "#1C0000"
 			inlays: "#FFF"
 			frets: "#EAE8C2"
 			strings: "#E0DC98"
+			scale_highlight_note_background: "black"
+			scale_highlight_note_text: "#FFFFAA"
 	
 	constructor: ->
 		@strings = [
@@ -69,7 +84,7 @@ class @Fretboard
 
 		# NOTE: frets are defined as an X of the fret, but the width of the space between it and the *previous* fret
 		# (the width of the space you can press down on to hold the string against a given fret)
-		@openFretW = OSW*1.8
+		@openFretW = OSW#*1.8
 		@openFretX = 0
 
 		@pointerX = 0
@@ -335,6 +350,30 @@ class @Fretboard
 					(note.s/3+1)*2
 				)
 		
+		for str, s in @strings
+			sy = (s+1/2)*sh
+			for fret_i in [0..fretXs.length]
+				note_n = str.base_note_n + fret_i
+				fret_x = fretXs[fret_i]
+				fret_w = fretWs[fret_i]
+				if is_midi_value_in_scale(note_n)
+					ctx.beginPath()
+					ctx.arc(fret_x - fret_w/2, sy, sh * 0.3, 0, Math.PI * 2)
+					ctx.fillStyle = @theme.scale_highlight_note_background or "white"
+					ctx.fill()
+					ctx.beginPath()
+					ctx.font = if fret_x is @openFretX then "25px Helvetica" else "20px Helvetica"
+					ctx.textAlign = "center"
+					ctx.textBaseline = "middle"
+					ctx.fillStyle = @theme.scale_highlight_note_text or "black"
+					# TODO: why is it fromKey that works, rather than fromMIDI?
+					note_name =
+						teoria.note.fromKey(note_n).toString(true)
+							.replace(/^[a-g]/, ((m)-> m.toUpperCase()))
+							.replace("#", "♯")
+							.replace("b", "♭")
+					ctx.fillText(note_name, fret_x - fret_w/2, sy)
+
 		ctx.restore()
 
 

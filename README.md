@@ -16,6 +16,11 @@ Tertiary mouse button (middle mouse button) does a bend, although bends are not 
 Timing is also not recorded yet.
 So it's not very useful for recording tabs, although you could certainly use it as an interactive chart at the least.
 
+You can highlight different types of scales,
+a feature I first implemented in [Tri-Chromatic Keyboard][].
+It should be much more useful here, since you can learn how to play a guitar with it!
+(as opposed to an instrument that virtually no-one has, including me)
+
 ----
 
 Uses [tuna][] audio effects library.
@@ -35,8 +40,6 @@ The tablature parser is available as separately as a module [here][tablature-par
 * Make web application self-explanatory and test accessibility
 
 * Make bending (MMB) less ridiculous
-
-* Add scale highlighting like I did with [Tri-Chromatic Keyboard][]!
 
 * Record chords
   (with multitouch or a modifier key, maybe also have some sort of toggle)

@@ -8,7 +8,7 @@
 				margin: 3px;
 				font-family: sans-serif;
 			}
-			label {
+			h2 > .controls {
 				font-size: 1rem;
 				font-weight: normal;
 				float: right;
@@ -44,13 +44,52 @@
 		<script src="lib/PEP.min.js"></script>
 		<script src="lib/webaudioshim.js"></script>
 		<script src="lib/tuna.js"></script>
+		<script src="lib/teoria.js"></script>
 		<script src="lib/coffee-script.js"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
 	</head>
 	<body>
 		<h1>Guitar Recorder</h1>
 		<h2>Interactive Fretboard
-			<label>Theme: <select class="theme"></select></label>
+			<div class="controls">
+				<label>Theme: <select class="theme"></select></label>
+				<label>Scale:
+					<select id="scale">
+						<option value="highlight-disabled" selected>No Scale Highlight</option>
+						<option value="harmonicchromatic">Harmonic Chromatic</option>
+						<option value="major">Ionian (Major)</option>
+						<option value="minor">Aeolian (Minor)</option>
+						<option value="dorian">Dorian</option>
+						<option value="phrygian">Phrygian</option>
+						<option value="lydian">Lydian</option>
+						<option value="mixolydian">Mixolydian</option>
+						<option value="locrian">Locrian</option>
+						<option value="majorpentatonic">Major Pentatonic</option>
+						<option value="minorpentatonic">Minor Pentatonic</option>
+						<option value="blues">Blues</option>
+						<option value="doubleharmonic">Double Harmonic (Flamenco)</option>
+						<option value="harmonicminor">Harmonic Minor</option>
+						<option value="melodicminor">Melodic Minor</option>
+						<option value="wholetone">Whole Tone</option>
+					</select>
+				</label>
+				<label> on <select id="scale-start">
+					<option value="C" selected>C</option>
+					<option value="C#">C♯</option>
+					<option value="D">D</option>
+					<option value="D#">D♯</option>
+					<option value="E">E</option>
+					<option value="F">F</option>
+					<option value="F#">F♯</option>
+					<option value="G">G</option>
+					<option value="G#">G♯</option>
+					<option value="A">A</option>
+					<option value="A#">A♯</option>
+					<option value="B">B</option>
+				</select></label>
+				<!-- <label><input id="disable-keys-outside-scale" type="checkbox">Disable playing outside scale / Constrain to scale</label> -->
+				<!-- TODO: add the above option and maybe an option to toggle note names, because they can be noisey -->
+			</div>
 		</h2>
 		<div class="fretboard-area area"></div>
 		<h2>Tablature Editor</h2>
