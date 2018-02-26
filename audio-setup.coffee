@@ -100,14 +100,14 @@ connect pre, chorus, wahwah, drive, cabinet, post
 #connect chorus, cabinet/post?
 
 
-splitter = actx.createChannelSplitter(2)
-merger = actx.createChannelMerger(2)
-post.connect(splitter)
-splitter.connect(merger)
-merger.connect(actx.destination)
-
+# splitter = actx.createChannelSplitter(2)
 # merger = actx.createChannelMerger(2)
-# post.connect(merger, 0, 0)
-# post.connect(merger, 0, 1)
+# post.connect(splitter)
+# splitter.connect(merger)
 # merger.connect(actx.destination)
+
+merger = actx.createChannelMerger(2)
+post.connect(merger, 0, 0)
+post.connect(merger, 0, 1)
+merger.connect(actx.destination)
 
