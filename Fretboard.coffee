@@ -216,7 +216,7 @@ class @Fretboard
 				yBend = Math.min(Math.max(deltaAmplitude, -maxAmplitude), maxAmplitude) * amplitudeToPixels * xLength
 
 				# console.log amplitude, yBend
-				console.log deltaAmplitude, yBend
+				# console.log deltaAmplitude, yBend
 				drawBentLine(x1, y1, x2, y2, 0, yBend, ss, lw)
 			ctx.restore()
 
