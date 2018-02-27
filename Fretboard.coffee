@@ -350,29 +350,35 @@ class @Fretboard
 					(note.s/3+1)*2
 				)
 		
-		for str, s in @strings
-			sy = (s+1/2)*sh
-			for fret_i in [0..fretXs.length]
-				note_n = str.base_note_n + fret_i
-				fret_x = fretXs[fret_i]
-				fret_w = fretWs[fret_i]
-				if is_midi_value_in_scale(note_n)
-					ctx.beginPath()
-					ctx.arc(fret_x - fret_w/2, sy, sh * 0.3, 0, Math.PI * 2)
-					ctx.fillStyle = @theme.scale_highlight_note_background or "white"
-					ctx.fill()
-					ctx.beginPath()
-					ctx.font = if fret_x is @openFretX then "25px Helvetica" else "20px Helvetica"
-					ctx.textAlign = "center"
-					ctx.textBaseline = "middle"
-					ctx.fillStyle = @theme.scale_highlight_note_text or "black"
-					# TODO: why is it fromKey that works, rather than fromMIDI?
-					note_name =
-						teoria.note.fromKey(note_n).toString(true)
-							.replace(/^[a-g]/, ((m)-> m.toUpperCase()))
-							.replace("#", "♯")
-							.replace("b", "♭")
-					ctx.fillText(note_name, fret_x - fret_w/2, sy)
+		for scale_highlight_layer in ["background", "text"]
+			for str, s in @strings
+				sy = (s+1/2)*sh
+				for fret_i in [0..fretXs.length]
+					note_n = str.base_note_n + fret_i
+					fret_x = fretXs[fret_i]
+					fret_w = fretWs[fret_i]
+					if is_midi_value_in_scale(note_n)
+						switch scale_highlight_layer
+							when "background"
+								ctx.beginPath()
+								radius = sh * (if fret_i < 20 then 0.3 else 0.25)
+								ctx.arc(fret_x - fret_w/2, sy, radius, 0, Math.PI * 2)
+								ctx.fillStyle = @theme.scale_highlight_note_background or "white"
+								ctx.fill()
+							when "text"
+								ctx.beginPath()
+								font_size = if fret_i is 0 then 25 else if fret_i < 20 then 20 else 15
+								ctx.font = "#{font_size}px Helvetica"
+								ctx.textAlign = "center"
+								ctx.textBaseline = "middle"
+								ctx.fillStyle = @theme.scale_highlight_note_text or "black"
+								# TODO: investigate, why is it fromKey that works, rather than fromMIDI?
+								note_name =
+									teoria.note.fromKey(note_n).toString(true)
+										.replace(/^[a-g]/, ((m)-> m.toUpperCase()))
+										.replace("#", "♯")
+										.replace("b", "♭")
+								ctx.fillText(note_name, fret_x - fret_w/2, sy)
 
 		ctx.restore()
 
