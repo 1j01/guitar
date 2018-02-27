@@ -8,10 +8,11 @@
 				margin: 3px;
 				font-family: sans-serif;
 			}
-			h2 > .controls {
-				font-size: 1rem;
-				font-weight: normal;
-				float: right;
+			.header {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-between;
 			}
 			.tablature-editor {
 				width: 100%;
@@ -50,12 +51,13 @@
 	</head>
 	<body>
 		<h1>Guitar Recorder</h1>
-		<h2>Interactive Fretboard
+		<div class="header">
+			<h2>Interactive Fretboard</h2>
 			<div class="controls">
 				<label>Theme: <select class="theme"></select></label>
 				<label>Scale:
 					<select id="scale">
-						<option value="" selected>No Scale Highlight</option>
+						<option value="" selected>None (Highlight Off)</option>
 						<option value="harmonicchromatic">Harmonic Chromatic</option>
 						<option value="major">Ionian (Major)</option>
 						<option value="minor">Aeolian (Minor)</option>
@@ -90,12 +92,17 @@
 				<!-- <label><input id="disable-keys-outside-scale" type="checkbox">Disable playing outside scale / Constrain to scale</label> -->
 				<!-- TODO: add the above option and maybe an option to toggle note names, because they can be noisey -->
 			</div>
-		</h2>
+		</div>
 		<div class="fretboard-area area"></div>
-		<h2>Tablature Editor
+		<div class="header">
+			<h2>Tablature Editor</h2>
 			<div class="controls">
+				<!-- TODO: probably a button like Load Tabs or Load Song that prompts you with instuctions -->
+				<!-- there's not really enough room in one line of text to explain that you can simply copy the webpage contents with Ctrl+A Ctrl+C -->
+				<!-- could also integrate some services/searching into the app directly -->
+				<span>Search the web for any song and paste the tabs here.</span>
 				<!-- TODO: toggle button for insert/overwrite (INS/OVR? nah, not unless we run out of space) and one for the auto multiline selection -->
-				<label>Presets:
+				<label>Or load a preset:
 					<select id="tablature-presets">
 						<option value="" selected>Choose Song</option>
 						<option value="tabs/tetris.txt">Tetris (fancy version!)</option>
@@ -105,11 +112,17 @@
 					</select>
 				</label>
 			</div>
-		</h2>
+		</div>
 		<div class="tablature-area area">
 			<div class="tablature-error error" role="alert" aria-hidden="true" style="display: none"></div>
 			<div class="tablature-editor"></div>
 		</div>
+		<br>
+		<br>
+		<footer>
+			Instructions, source code, and to-do list <a href="">on GitHub</a>.
+			Made by <a href="http://isaiahodhner.ml">Isaiah Odhner</a>.
+		</footer>
 		<script src="helpers.coffee" type="text/coffeescript"></script>
 		<script src="audio-setup.coffee" type="text/coffeescript"></script>
 		<script src="tablature.coffee" type="text/coffeescript"></script>
