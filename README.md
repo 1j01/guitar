@@ -4,21 +4,26 @@ Guitar
 
 It's a virtual guitar record-a-synthesize-amatronic web application.
 
+[![](screenshot.png)][app]
+
+[Try it out here.][app]
+
 You can copy and paste entire webpages containing guitar tabs and it'll try to load all it can.
 
-Play back notes by pressing any of "most keys" (at least on US keyboards).
-You can cycle between different fingers on different keys, two, four, or just one, whatever feels natural.
+Play back notes by pressing "almost any" key (at least on US keyboards),
+with the fretboard focused or nothing focused.
+You can rock back and forth between different fingers on different keys, or just one, whatever feels natural.
 
 Record notes by clicking on the fretboard.
 Secondary click is a shortcut to an open string, since you can do this easily in real life from any position as well.
 Tertiary mouse button (middle mouse button) does a bend, although bends are not recorded yet.
 
 Timing is also not recorded yet.
-So it's not very useful for recording tabs, although you could certainly use it as an interactive chart at the least.
+So it's not very useful for recording tabs, although you could certainly use it as an interactive chart at least.
 
-You can highlight different types of scales,
+You can choose any scale to highlight,
 a feature I first implemented in [Tri-Chromatic Keyboard][].
-It should be much more useful here, since you can learn how to play a guitar with it!
+It should be much more useful here, since you can learn how to play the guitar with it!
 (as opposed to an instrument that virtually no-one has, including me)
 
 ----
@@ -26,7 +31,7 @@ It should be much more useful here, since you can learn how to play a guitar wit
 Uses [tuna][] audio effects library.
 The guitar synthesis algorithm is from [guitar-synth](https://github.com/getinstinct/guitar-synth).
 
-The tablature parser is available as separately as a module [here][tablature-parser].
+The tablature parser created for the app is available separately as a module [here][tablature-parser].
 
 
 ## TODO
@@ -59,8 +64,6 @@ The tablature parser is available as separately as a module [here][tablature-par
 
 * Allow configuring the effects chain
   (at least toggle distortion on/off)
-
-* Include demo tabs (probably in a dropdown)
 
 * Tablature editor
     - Clear way to unfocus / set focus to the fretboard for playback, via the keyboard
@@ -100,6 +103,7 @@ The tablature parser is available as separately as a module [here][tablature-par
 * MusicXML? MIDI?
 
 
+[app]: http://isaiahodhner.ml/guitar/
 [tuna]: https://github.com/Dinahmoe/tuna
 [tablature-parser]: https://github.com/1j01/tablature-parser
 [Tri-Chromatic Keyboard]: https://github.com/1j01/tri-chromatic-keyboard
