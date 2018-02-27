@@ -35,13 +35,11 @@ scale = teoria.scale scale_start, "harmonicchromatic"
 scale_select = document.getElementById("scale")
 scale_start_select = document.getElementById("scale-start")
 tablature_presets_select = document.getElementById("tablature-presets")
-# disable_keys_outside_scale_checkbox = document.getElementById("disable-keys-outside-scale")
+# disable_outside_scale_checkbox = document.getElementById("disable-outside-scale")
 keys_container = document.getElementById("keys")
 keyboard_element = document.getElementById("keyboard")
 
 scale_midi_values = []
-# @in_scale = (note)->
-# 	(note.midi() % 12) in scale_midi_values
 @is_midi_value_in_scale = (midi_value)->
 	(midi_value % 12) in scale_midi_values
 
@@ -54,26 +52,20 @@ do update_scale_highlighting = ->
 		scale_notes = teoria.scale(scale_start, scale_name).notes()
 	scale_midi_values = (scale_note.midi() % 12 for scale_note in scale_notes)
 
-# disable_keys_outside_scale = disable_keys_outside_scale_checkbox.checked
-# disable_keys_outside_scale_checkbox.onchange = (e)->
-# 	disable_keys_outside_scale = e.target.checked
+# disable_outside_scale = disable_outside_scale_checkbox.checked
+# disable_outside_scale_checkbox.onchange = (e)->
+# 	disable_outside_scale = e.target.checked
 # 	update_scale_highlighting()
 
 scale_select.addEventListener "change", update_scale_highlighting
 scale_start_select.addEventListener "change", update_scale_highlighting
-
-# 	for key in keys
-# 		matches = in_scale(key.note)
-# 		disable = disable_keys_outside_scale and not matches
-# 		key.element.classList[if disable then "add" else "remove"] "disabled"
-# 		key.element.classList[if matches then "remove" else "add"] "lowlight"
-# 		key.element.classList[if matches then "add" else "remove"] "highlight"
 
 tablature_presets_select.addEventListener "change", (e)->
 	path = e.target.value
 	if path is ""
 		tablature_editor.editor.setValue("")
 		return
+	# fetch isn't allowed on file: URI
 	# fetch path
 	# .catch (err)->
 	# 	$tablature_error.message.text("Failed to load #{path}: #{err}")

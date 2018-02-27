@@ -51,9 +51,6 @@ class @Fretboard
 			inlays: "#FFF"
 			frets: "lightgray"
 			strings: "#777"
-			# probably shouldn't have one theme where you can't see the note highlights on the open strings
-			# scale_highlight_note_background: "white"
-			# scale_highlight_note_text: "black"
 			scale_highlight_note_background: "black"
 			scale_highlight_note_text: "white"
 		"Gilded Dark":
@@ -94,7 +91,7 @@ class @Fretboard
 		@pointerBend = off
 		
 		@pointerFret = 0
-		@pointerFretX = @openFretX
+		@pointerFretX = @openFretX # TODO: clean up redundant information/state
 		@pointerFretW = @openFretW
 		@pointerString = 0
 		@pointerStringY = 0
@@ -221,12 +218,8 @@ class @Fretboard
 				# 	0 # rotation
 				# 	0, Math.PI * 2 # start, end
 				# )
-				# ctx.fillRect(fretX - fretW, stringY - stringHeight/2, fretW, stringHeight)
 				ctx.fillRect(fretX + 5 - fretW, stringY - stringHeight/2, fretW - 5, stringHeight)
-			# ctx.fillRect(fretX, stringY - stringHeight/2, 5, stringHeight)
 			ctx.fillRect(fretX - 5, stringY - stringHeight/2, 10, stringHeight)
-			# ctx.fillRect(fretX + 2, stringY - stringHeight/2, 3, stringHeight)
-			# ctx.fillRect(fretX, stringY + stringBendY - stringHeight/2, 5, stringHeight)
 			ctx.fill()
 
 		ctx.save()
@@ -269,7 +262,6 @@ class @Fretboard
 			fretWs[fret] = x - xp
 			
 			unless @theme.shadow is off
-				# drawLine(x, 0, x, @h, "rgba(0, 0, 0, 0.5)", 5)
 				drawLine(x+0.5, 0, x+0.5, @h, "rgba(0, 0, 0, 0.8)", 5)
 			drawLine(x, 0, x, @h, @theme.frets, 3)
 			
@@ -331,7 +323,6 @@ class @Fretboard
 				ctx.fillStyle = "rgba(0, 255, 0, 0.2)"
 				@rec_note = null
 			
-			# drawFingerHoldOrOpenNote(@pointerFretX, @pointerFretW, (if @pointerBend then mY else @pointerStringY), sh)
 			drawFingerHoldOrOpenNote(@pointerFretX, @pointerFretW, @pointerStringY, sh, (if @pointerBend then mY-@pointerStringY else 0))
 		
 		# draw notes being played back from the tablature / recorded song
