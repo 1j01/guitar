@@ -4,7 +4,7 @@ Guitar
 
 It's a virtual guitar record-a-synthesize-amatronic web application.
 
-[![](screenshot.png)][app]
+[![Demo animation](https://i.imgur.com/afoMtR3.gif)][app]
 
 [Try it out here.][app]
 
