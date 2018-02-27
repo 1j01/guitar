@@ -55,7 +55,7 @@
 				<label>Theme: <select class="theme"></select></label>
 				<label>Scale:
 					<select id="scale">
-						<option value="highlight-disabled" selected>No Scale Highlight</option>
+						<option value="" selected>No Scale Highlight</option>
 						<option value="harmonicchromatic">Harmonic Chromatic</option>
 						<option value="major">Ionian (Major)</option>
 						<option value="minor">Aeolian (Minor)</option>
@@ -92,7 +92,20 @@
 			</div>
 		</h2>
 		<div class="fretboard-area area"></div>
-		<h2>Tablature Editor</h2>
+		<h2>Tablature Editor
+			<div class="controls">
+				<!-- TODO: toggle button for insert/overwrite (INS/OVR? nah, not unless we run out of space) and one for the auto multiline selection -->
+				<label>Presets:
+					<select id="tablature-presets">
+						<option value="" selected>Choose Song</option>
+						<option value="tabs/tetris.txt">Tetris (fancy version!)</option>
+						<option value="tabs/ievan polkka.txt">Ievan Polkka</option>
+						<option value="tabs/still alive.txt">Still Alive (Portal)</option>
+						<option value="tabs/my song.txt">My Song (Isaiah Odhner)</option>
+					</select>
+				</label>
+			</div>
+		</h2>
 		<div class="tablature-area area">
 			<div class="tablature-error error" role="alert" aria-hidden="true" style="display: none"></div>
 			<div class="tablature-editor"></div>

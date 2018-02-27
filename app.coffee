@@ -34,6 +34,7 @@ scale = teoria.scale scale_start, "harmonicchromatic"
 
 scale_select = document.getElementById("scale")
 scale_start_select = document.getElementById("scale-start")
+tablature_presets_select = document.getElementById("tablature-presets")
 # disable_keys_outside_scale_checkbox = document.getElementById("disable-keys-outside-scale")
 keys_container = document.getElementById("keys")
 keyboard_element = document.getElementById("keyboard")
@@ -47,7 +48,7 @@ scale_midi_values = []
 do update_scale_highlighting = ->
 	scale_name = scale_select.selectedOptions[0].value
 	scale_start = scale_start_select.selectedOptions[0].value
-	if scale_name is "highlight-disabled"
+	if scale_name is ""
 		scale_notes = []
 	else
 		scale_notes = teoria.scale(scale_start, scale_name).notes()
@@ -67,6 +68,27 @@ scale_start_select.addEventListener "change", update_scale_highlighting
 # 		key.element.classList[if disable then "add" else "remove"] "disabled"
 # 		key.element.classList[if matches then "remove" else "add"] "lowlight"
 # 		key.element.classList[if matches then "add" else "remove"] "highlight"
+
+tablature_presets_select.addEventListener "change", (e)->
+	path = e.target.value
+	if path is ""
+		tablature_editor.editor.setValue("")
+		return
+	# fetch path
+	# .catch (err)->
+	# 	$tablature_error.message.text("Failed to load #{path}: #{err}")
+	# 	tablature_editor.editor.setValue(err.stack)
+	# .then (tabs_text)->
+	# 	load_tablature(tabs_text)
+	xhr = new XMLHttpRequest()
+	xhr.addEventListener "error", (e)->
+		$tablature_error.message.text("Failed to load #{path}")
+		# tablature_editor.editor.setValue(err.stack)
+	xhr.addEventListener "load", ->
+		tabs_text = xhr.responseText
+		load_tablature(tabs_text)
+	xhr.open "GET", path
+	xhr.send()
 
 
 @fretboard = new Fretboard()
@@ -158,6 +180,9 @@ $$.on "blur", ->
 
 tablature_editor.editor.on "blur", ->
 	text = tablature_editor.editor.getValue()
+	load_tablature(text)
+
+load_tablature = (text)->
 	if text isnt "#{song}" and text
 		try
 			res = Tablature.parse(text.replace(/\ <</g, ""))
