@@ -148,7 +148,7 @@ class @Fretboard
 		@fret_scale = Math.min(Math.sqrt(@canvas.width) * 50, 2138)
 		# @x = OSW + Math.max(0, (@canvas.width - @w)/2) # to center it
 	
-	draw: ()->
+	draw: =>
 		ctx = @canvas.getContext("2d")
 		
 		ctx.clearRect(0, 0, @canvas.width, @canvas.height)
