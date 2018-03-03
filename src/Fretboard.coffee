@@ -105,8 +105,6 @@ class @Fretboard
 		$canvas = $("<canvas tabindex=0 touch-action=pan-y/>")
 		@canvas = $canvas[0]
 		
-		ctx = @canvas.getContext("2d")
-		
 		prevent = (e)->
 			e.preventDefault()
 			no
@@ -138,11 +136,6 @@ class @Fretboard
 		
 		$canvas.on "contextmenu", prevent
 		
-		do animate = =>
-			ctx.clearRect(0, 0, @canvas.width, @canvas.height)
-			@draw(ctx)
-			requestAnimationFrame(animate)
-		
 		$$.on "resize", @resize # :)
 		setTimeout @resize # :/
 		setTimeout @resize # :(
@@ -155,7 +148,10 @@ class @Fretboard
 		@fret_scale = Math.min(Math.sqrt(@canvas.width) * 50, 2138)
 		# @x = OSW + Math.max(0, (@canvas.width - @w)/2) # to center it
 	
-	draw: (ctx)->
+	draw: ()->
+		ctx = @canvas.getContext("2d")
+		
+		ctx.clearRect(0, 0, @canvas.width, @canvas.height)
 		
 		drawLine = (x1, y1, x2, y2, ss, lw)=>
 			ctx.strokeStyle = ss if ss?

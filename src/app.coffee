@@ -109,6 +109,12 @@ $theme.on "change", ->
 	fretboard.theme = Fretboard.themes[$theme.val()]
 	try localStorage.guitar_theme = $theme.val()
 
+
+do animate = =>
+	fretboard.draw()
+	requestAnimationFrame(animate)
+
+
 $$ = $(window)
 
 $$.on "keyup", (e)->
