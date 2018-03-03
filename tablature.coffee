@@ -1,3 +1,8 @@
+###
+Note: this file should be kept in sync with tablature-parser
+
+https://github.com/1j01/tablature-parser/blob/master/tablature-parser.coffee
+###
 
 parseTabs = (tablature)->
 	
