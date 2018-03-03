@@ -84,7 +84,6 @@ tablature_presets_select.addEventListener "change", (e)->
 
 
 @fretboard = new Fretboard()
-$(fretboard.canvas).appendTo(".fretboard-area")
 
 $tablature_error = $(".tablature-error")
 $tablature_error.dismiss = -> @hide().attr("aria-hidden", "true").text("")
@@ -105,10 +104,29 @@ for theme_name, theme of Fretboard.themes
 		.attr(value: theme_name, selected: Fretboard.themes[theme_name] is fretboard.theme)
 		.appendTo($theme)
 
+effect = new CircularTransitionEffect
+$(effect.container).appendTo(".fretboard-area")
+$(fretboard.canvas).appendTo(effect.container)
+
 $theme.on "change", ->
 	fretboard.theme = Fretboard.themes[$theme.val()]
 	try localStorage.guitar_theme = $theme.val()
 
+	canvas_remnant_old = document.createElement("canvas") # like "Carpet Remnant World"
+	canvas_remnant_old.width = fretboard.canvas.width
+	canvas_remnant_old.height = fretboard.canvas.height
+	canvas_remnant_old.getContext("2d").drawImage(fretboard.canvas, 0, 0)
+
+	effect.container.appendChild(canvas_remnant_old)
+	# TODO: support multiple transitions at once
+	# effect.replaceActiveTransitionElement(fretboard.canvas, canvas_remnant_old)
+
+	effect.transitionTo(
+		fretboard.canvas
+		$theme.offset().left + $theme.width() / 2 - $(effect.container).offset().left
+		$theme.offset().top + $theme.height() / 2 - $(effect.container).offset().top
+		200 # radius speed, percent per second
+	)
 
 do animate = =>
 	fretboard.draw()

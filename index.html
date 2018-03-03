@@ -44,6 +44,16 @@
 				margin-top: 1em;
 				padding: 1em 0;
 			}
+			.circular-transition-effect-container {
+				position: relative;
+				overflow: hidden;
+			}
+			/* exclude the first child so that the container takes up the space of one of its children */
+			.circular-transition-effect-container > *:not(:first-child) {
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
 		</style>
 		<script src="lib/jquery.min.js"></script>
 		<script src="lib/PEP.min.js"></script>
@@ -131,6 +141,7 @@
 		<script src="src/TablatureEditor.coffee" type="text/coffeescript"></script>
 		<script src="src/GuitarString.coffee" type="text/coffeescript"></script>
 		<script src="src/Fretboard.coffee" type="text/coffeescript"></script>
+		<script src="src/circular-transition-effect.coffee" type="text/coffeescript"></script>
 		<script src="src/app.coffee" type="text/coffeescript"></script>
 	</body>
 </html>
