@@ -103,7 +103,7 @@ The tablature parser created for the app is available separately as a module [he
 * MusicXML? MIDI?
 
 
-[app]: http://isaiahodhner.ml/guitar/
+[app]: https://1j01.github.io/guitar/
 [tuna]: https://github.com/Dinahmoe/tuna
 [tablature-parser]: https://github.com/1j01/tablature-parser
 [Tri-Chromatic Keyboard]: https://github.com/1j01/tri-chromatic-keyboard
