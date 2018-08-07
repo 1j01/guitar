@@ -36,6 +36,7 @@ scale_select = document.getElementById("scale")
 scale_start_select = document.getElementById("scale-start")
 tablature_presets_select = document.getElementById("tablature-presets")
 # disable_outside_scale_checkbox = document.getElementById("disable-outside-scale")
+multi_row_selection_mode_input = document.getElementById("multi-row-selection-mode")
 keys_container = document.getElementById("keys")
 keyboard_element = document.getElementById("keyboard")
 
@@ -92,6 +93,10 @@ $tablature_error.message = (message)-> @show().attr("aria-hidden", "false").text
 
 tablature_editor = new TablatureEditor($(".tablature-editor")[0])
 tablature_editor.showPlaybackPosition(song.pos)
+
+do update_multi_row_selection_mode = ->
+	tablature_editor.multi_row_selection_mode = multi_row_selection_mode_input.checked
+multi_row_selection_mode_input.addEventListener "change", update_multi_row_selection_mode
 
 $theme = $(".theme")
 

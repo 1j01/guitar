@@ -102,11 +102,15 @@
 		<div class="header">
 			<h2>Tablature Editor</h2>
 			<div class="controls">
+				<!-- (((multi-(line/row/string)) / (staff/stave)) (selection/cursor) [mode]) -->
+				<label title="Select across all lines in a staff/stave, and edit each line at once."><input id="multi-row-selection-mode" type="checkbox" checked>Multi-Row Cursor</label>
+				<!-- TODO: toggle button for insert/overwrite (also make the multi-row control use a toggle button) -->
+			</div>
+			<div class="controls">
 				<!-- TODO: probably a button like Load Tabs or Load Song that prompts you with instuctions -->
 				<!-- there's not really enough room in one line of text to explain that you can simply copy the webpage contents with Ctrl+A Ctrl+C -->
 				<!-- could also integrate some services/searching into the app directly -->
 				<span>Search the web for any song and paste the tabs here.</span>
-				<!-- TODO: toggle button for insert/overwrite (INS/OVR? nah, not unless we run out of space) and one for the auto multiline selection -->
 				<label>Or load a preset:
 					<select id="tablature-presets">
 						<option value="" selected>Choose Song</option>

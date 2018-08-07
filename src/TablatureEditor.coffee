@@ -4,6 +4,7 @@ event = require 'ace/lib/event'
 
 class @TablatureEditor
 	constructor: (element)->
+		@multi_row_selection_mode = on
 		
 		@editor = ace.edit(element)
 		@editor.getSession().setMode 'ace/mode/ocaml'
@@ -70,7 +71,7 @@ class @TablatureEditor
 		
 		@editor.on "mousedown", (e)=>
 			button = e.getButton()
-			return unless button is 0
+			return unless button is 0 and @multi_row_selection_mode
 			
 			return if lines_are_uneven(get_lines())
 			
