@@ -113,6 +113,12 @@ redo_button.addEventListener "click", ->
 	tablature_editor.editor.redo()
 	return
 
+tablature_editor.editor.on "input", ->
+	undo_manager = tablature_editor.editor.session.getUndoManager()
+	undo_button.disabled = not undo_manager.hasUndo()
+	redo_button.disabled = not undo_manager.hasRedo()
+	
+
 do update_multi_row_selection_mode = ->
 	tablature_editor.multi_row_selection_mode = multi_row_selection_mode_input.checked
 	return
