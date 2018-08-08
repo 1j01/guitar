@@ -37,6 +37,7 @@ scale_start_select = document.getElementById("scale-start")
 tablature_presets_select = document.getElementById("tablature-presets")
 # disable_outside_scale_checkbox = document.getElementById("disable-outside-scale")
 multi_row_selection_mode_input = document.getElementById("multi-row-selection-mode")
+overwrite_mode_input = document.getElementById("overwrite-mode")
 keys_container = document.getElementById("keys")
 keyboard_element = document.getElementById("keyboard")
 
@@ -97,6 +98,12 @@ tablature_editor.showPlaybackPosition(song.pos)
 do update_multi_row_selection_mode = ->
 	tablature_editor.multi_row_selection_mode = multi_row_selection_mode_input.checked
 multi_row_selection_mode_input.addEventListener "change", update_multi_row_selection_mode
+
+do update_overwrite_mode = ->
+	tablature_editor.editor.session.setOverwrite(overwrite_mode_input.checked)
+overwrite_mode_input.addEventListener "change", update_overwrite_mode
+tablature_editor.editor.session.on "changeOverwrite", ->
+	overwrite_mode_input.checked = tablature_editor.editor.session.getOverwrite()
 
 $theme = $(".theme")
 
