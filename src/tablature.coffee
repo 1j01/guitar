@@ -34,6 +34,7 @@ parseTabs = (tablature)->
 			if current_block.tuning.toUpperCase() is tuning.toUpperCase()
 				current_block.tuning = tuning
 			current_block = null
+		return
 	
 	for line in lines
 		if line.match(/[-–—]/)

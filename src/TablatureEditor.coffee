@@ -57,6 +57,8 @@ class @TablatureEditor
 					@positions.push column
 				last_column_had_digit = column_has_digit
 				column++
+			
+			return
 		
 		# The following is based on the default multi-selection block selection code:
 		# https://github.com/ajaxorg/ace/blob/master/lib/ace/mouse/multi_select_handler.js
@@ -116,6 +118,7 @@ class @TablatureEditor
 				rectSel.forEach(@editor.addSelectionMarker, @editor)
 				@editor.updateSelectionMarkers()
 				@editor.$blockScrolling--
+				return
 
 			
 			@editor.$blockScrolling++
@@ -148,13 +151,15 @@ class @TablatureEditor
 				@editor.inVirtualSelectionMode = false
 				@editor.$mouseHandler.$clickSelection = null
 				@editor.$blockScrolling--
+				return
 
 			onSelectionInterval = blockSelect
 
 			event.capture(@editor.container, onMouseSelection, onMouseSelectionEnd)
 			timerId = setInterval(onSelectionInterval, 20)
 
-			return e.preventDefault()
+			e.preventDefault()
+			return
 	
 	showPlayingNote: (pos, note)->
 		@removePlayingNote(pos, note)
@@ -165,11 +170,13 @@ class @TablatureEditor
 		range = new Range(note.s, column, note.s, column+1)
 		marker = @editor.getSession().addMarker(range, "playing-note", "text") # text?
 		@playing_note_highlight_markers[key] = marker
+		return
 	
 	removePlayingNote: (pos, note)->
 		key = "#{note.s}:#{pos}"
 		existing_marker = @playing_note_highlight_markers[key]
 		@editor.getSession().removeMarker existing_marker if existing_marker
+		return
 	
 	showPlaybackPosition: (pos)->
 		column = @positions[pos]
@@ -190,9 +197,11 @@ class @TablatureEditor
 		# delta_pageX = pageX_2 - pageX_1
 		# @editor.renderer.scrollToX column * delta_pageX
 		# @editor.renderer.scrollToX column * 7
+		return
 	
 	hidePlaybackPosition: ->
 		for marker in @column_highlight_markers
 			@editor.getSession().removeMarker marker
 		
 		@column_highlight_markers = []
+		return

@@ -5,6 +5,7 @@ tuna = new Tuna(actx)
 connect = (nodes...)->
 	for node, i in nodes when next = nodes[i+1]
 		node.connect next.input ? next.destination ? next
+	return
 
 # # # # # # # # # # # #
 

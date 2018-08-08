@@ -17,6 +17,7 @@ class @GuitarString
 			@data = e.outputBuffer.getChannelData(0)
 			for i in [0..@data.length]
 				@data[i] = @getSampleData()
+			return
 		@script_processor.connect(pre)
 		
 		@started = no

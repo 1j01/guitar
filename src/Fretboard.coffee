@@ -107,12 +107,13 @@ class @Fretboard
 		
 		prevent = (e)->
 			e.preventDefault()
-			no
+			return false
 		
 		update_pointer_position = (e)=>
 			offset = $canvas.offset()
 			@pointerX = e.pageX - offset.left
 			@pointerY = e.pageY - offset.top
+			return
 		
 		$$.on "pointermove", update_pointer_position
 		
@@ -124,6 +125,7 @@ class @Fretboard
 			prevent(e)
 			$canvas.focus()
 			$$.on "pointermove", prevent # make it so you don't select text in the textarea when dragging from the canvas
+			return
 		
 		$$.on "pointerup blur", (e)=>
 			$$.off "pointermove", prevent # but let you drag other times
@@ -131,6 +133,7 @@ class @Fretboard
 			@pointerOpen = off
 			@pointerBend = off
 			string.release() for string in @strings
+			return
 		
 		# @TODO: pointercancel/blur/Esc
 		
@@ -147,6 +150,7 @@ class @Fretboard
 		# @fret_scale = Math.sqrt(@canvas.width) * 50
 		@fret_scale = Math.min(Math.sqrt(@canvas.width) * 50, 2138)
 		# @x = OSW + Math.max(0, (@canvas.width - @w)/2) # to center it
+		return
 	
 	draw: =>
 		ctx = @canvas.getContext("2d")
@@ -160,6 +164,7 @@ class @Fretboard
 			ctx.moveTo(x1, y1)
 			ctx.lineTo(x2, y2)
 			ctx.stroke()
+			return
 		
 		drawBentLine = (x1, y1, x2, y2, controlPointXOffset, controlPointYOffset, ss, lw)=>
 			ctx.strokeStyle = ss if ss?
@@ -172,6 +177,7 @@ class @Fretboard
 				x2, y2
 			)
 			ctx.stroke()
+			return
 
 		drawVibratingString = (x1, y1, x2, y2, stringAmplitudeData, ss, lw)=>
 			amplitudeToPixels = 3
@@ -202,6 +208,7 @@ class @Fretboard
 
 				drawBentLine(x1, y1, x2, y2, 0, yBend, ss, lw)
 			ctx.restore()
+			return
 
 		drawFingerHoldOrOpenNote = (fretX, fretW, stringY, stringHeight, stringBendY=0)=>
 			ctx.beginPath()
@@ -217,6 +224,7 @@ class @Fretboard
 				ctx.fillRect(fretX + 5 - fretW, stringY - stringHeight/2, fretW - 5, stringHeight)
 			ctx.fillRect(fretX - 5, stringY - stringHeight/2, 10, stringHeight)
 			ctx.fill()
+			return
 
 		ctx.save()
 		ctx.translate(@x, @y)

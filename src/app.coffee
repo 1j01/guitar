@@ -5,6 +5,7 @@
 		@tuning = "eBGDAE" # backwards
 		@strings = ("#{string_name}|-" for string_name in @tuning)
 		@pos = 0
+		return
 	
 	toJSON: -> @notes
 	toString: -> song.strings.join("\n")
@@ -25,6 +26,7 @@
 		
 		if song.notes.length is 1
 			tablature_editor.showPlaybackPosition(song.pos)
+		return
 
 song.clear()
 
@@ -55,11 +57,13 @@ do update_scale_highlighting = ->
 	else
 		scale_notes = teoria.scale(scale_start, scale_name).notes()
 	scale_midi_values = (scale_note.midi() % 12 for scale_note in scale_notes)
+	return
 
 # disable_outside_scale = disable_outside_scale_checkbox.checked
 # disable_outside_scale_checkbox.onchange = (e)->
 # 	disable_outside_scale = e.target.checked
 # 	update_scale_highlighting()
+# 	return
 
 scale_select.addEventListener "change", update_scale_highlighting
 scale_start_select.addEventListener "change", update_scale_highlighting
@@ -85,32 +89,42 @@ tablature_presets_select.addEventListener "change", (e)->
 		load_tablature(tabs_text)
 	xhr.open "GET", path
 	xhr.send()
+	return
 
 
 @fretboard = new Fretboard()
 $(fretboard.canvas).appendTo(".fretboard-area")
 
 $tablature_error = $(".tablature-error")
-$tablature_error.dismiss = -> @hide().attr("aria-hidden", "true").text("")
-$tablature_error.message = (message)-> @show().attr("aria-hidden", "false").text(message)
+$tablature_error.dismiss = ->
+	@hide().attr("aria-hidden", "true").text("")
+	return
+$tablature_error.message = (message)->
+	@show().attr("aria-hidden", "false").text(message)
+	return
 
 tablature_editor = new TablatureEditor($(".tablature-editor")[0])
 tablature_editor.showPlaybackPosition(song.pos)
 
 undo_button.addEventListener "click", ->
 	tablature_editor.editor.undo()
+	return
 redo_button.addEventListener "click", ->
 	tablature_editor.editor.redo()
+	return
 
 do update_multi_row_selection_mode = ->
 	tablature_editor.multi_row_selection_mode = multi_row_selection_mode_input.checked
+	return
 multi_row_selection_mode_input.addEventListener "change", update_multi_row_selection_mode
 
 do update_overwrite_mode = ->
 	tablature_editor.editor.session.setOverwrite(overwrite_mode_input.checked)
+	return
 overwrite_mode_input.addEventListener "change", update_overwrite_mode
 tablature_editor.editor.session.on "changeOverwrite", ->
 	overwrite_mode_input.checked = tablature_editor.editor.session.getOverwrite()
+	return
 
 $theme = $(".theme")
 
@@ -127,11 +141,13 @@ for theme_name, theme of Fretboard.themes
 $theme.on "change", ->
 	fretboard.theme = Fretboard.themes[$theme.val()]
 	try localStorage.guitar_theme = $theme.val()
+	return
 
 
 do animate = =>
 	fretboard.draw()
 	requestAnimationFrame(animate)
+	return
 
 
 $$ = $(window)
@@ -141,6 +157,7 @@ $$.on "keyup", (e)->
 		sustain = off
 		for string in fretboard.strings
 			string.release()
+	return
 
 $$.on "keydown", (e)->
 	key = e.keyCode
@@ -188,6 +205,8 @@ $$.on "keydown", (e)->
 					$$.off "keyup", onkeyup
 					
 					tablature_editor.showPlaybackPosition(song.pos)
+				return
+	return
 
 $$.on "blur", ->
 	string.stop() for string in fretboard.strings
@@ -198,6 +217,7 @@ $$.on "blur", ->
 tablature_editor.editor.on "blur", ->
 	text = tablature_editor.editor.getValue()
 	load_tablature(text)
+	return
 
 load_tablature = (text)->
 	if text isnt "#{song}" and text
@@ -224,3 +244,4 @@ load_tablature = (text)->
 			tablature_editor.showPlaybackPosition(song.pos)
 	else
 		$tablature_error.dismiss()
+	return
