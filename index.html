@@ -13,7 +13,12 @@
 				display: flex;
 				flex-direction: row;
 				align-items: center;
-				justify-content: space-between;
+			}
+			.spacer {
+				flex: 1;
+			}
+			.header h2 {
+				padding-right: 1em;
 			}
 			.tablature-editor {
 				width: 100%;
@@ -58,6 +63,7 @@
 		<h1>Guitar Recorder</h1>
 		<div class="header">
 			<h2>Interactive Fretboard</h2>
+			<div class="spacer"></div>
 			<div class="controls">
 				<label>Theme: <select class="theme"></select></label>
 				<label>Scale:
@@ -102,11 +108,16 @@
 		<div class="header">
 			<h2>Tablature Editor</h2>
 			<div class="controls">
+				<!-- TODO: icon buttons -->
+				<!-- TODO: disabled state when not hasUndo/hasRedo -->
+				<button id="undo">Undo</button>
+				<button id="redo">Redo</button>
 				<!-- (((multi-(line/row/string)) / (staff/stave)) (selection/cursor) [mode]) -->
 				<label title="Select across all lines in a staff/stave, and edit each line at once."><input id="multi-row-selection-mode" type="checkbox" checked>Multi-Row Cursor</label>
 				<label title="Type over text at the cursor, replacing it (good for spacial editing) - as opposed to inserting text like normal"><input id="overwrite-mode" type="checkbox">Overwrite</label>
 				<!-- TODO: make these toggle buttons instead of plain checkboxes? -->
 			</div>
+			<div class="spacer"></div>
 			<div class="controls">
 				<!-- TODO: probably a button like Load Tabs or Load Song that prompts you with instuctions -->
 				<!-- there's not really enough room in one line of text to explain that you can simply copy the webpage contents with Ctrl+A Ctrl+C -->

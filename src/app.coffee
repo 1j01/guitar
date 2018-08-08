@@ -38,6 +38,8 @@ tablature_presets_select = document.getElementById("tablature-presets")
 # disable_outside_scale_checkbox = document.getElementById("disable-outside-scale")
 multi_row_selection_mode_input = document.getElementById("multi-row-selection-mode")
 overwrite_mode_input = document.getElementById("overwrite-mode")
+undo_button = document.getElementById("undo")
+redo_button = document.getElementById("redo")
 keys_container = document.getElementById("keys")
 keyboard_element = document.getElementById("keyboard")
 
@@ -94,6 +96,11 @@ $tablature_error.message = (message)-> @show().attr("aria-hidden", "false").text
 
 tablature_editor = new TablatureEditor($(".tablature-editor")[0])
 tablature_editor.showPlaybackPosition(song.pos)
+
+undo_button.addEventListener "click", ->
+	tablature_editor.editor.undo()
+redo_button.addEventListener "click", ->
+	tablature_editor.editor.redo()
 
 do update_multi_row_selection_mode = ->
 	tablature_editor.multi_row_selection_mode = multi_row_selection_mode_input.checked
