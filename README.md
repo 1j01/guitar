@@ -11,13 +11,12 @@ It's a virtual guitar record-a-synthesize-amatronic web application.
 You can copy and paste entire webpages containing guitar tabs and it'll try to load all it can.
 
 Play back notes by pressing "almost any" key (at least on US keyboards),
-with the fretboard focused or nothing focused.
-You can rock back and forth between different fingers on different keys, or just one, whatever feels natural.
+with the fretboard focused (or no control focused).
+You can rock back and forth between different fingers on different keys, or just pick one, whatever feels natural.
 
 Record notes by clicking on the fretboard.
-Secondary click is a shortcut to an open string, since you can do this easily in real life from any position as well.
+Secondary click is a shortcut to an open string. You can do this easily in real life from any position, so it makes sense to be able to do it from any position on the virtual guitar too.
 Tertiary mouse button (middle mouse button) does a bend, although bends are not recorded yet.
-
 Timing is also not recorded yet.
 So it's not very useful for recording tabs, although you could certainly use it as an interactive chart at least.
 
@@ -65,36 +64,35 @@ The tablature parser created for the app is available separately as a module [he
 * Allow configuring the effects chain
   (at least toggle distortion on/off)
 
+* Clear way set focus to the fretboard for playback (unfocusing the tablature editor), via the keyboard
+
 * Tablature editor
-    - Clear way to unfocus / set focus to the fretboard for playback, via the keyboard
-      
+    
     - Scroll with the playback position
     
-    - Make the playback position indicator different while playing
-    
-    - Handle multi-digit numbers when highlighting stuff
+    - Make the playback position indicator different while playing, so it's clearer whether its showing what's playing or what's next
     
     - Set the position in the song when you click in the tablature editor
     
-    - Insert and overwrite notes with the virtual guitar fretboard
+    - Handle multi-digit numbers when highlighting notes
     
-    - Shift+click to select keeping the existing selection anchor
+    - Insert and overwrite notes with the virtual guitar fretboard (as opposed to just appending (which is a specific form of inserting))
     
-    - Disable or override double-click and triple-click
+    - Multi-String Cursor mode
+        
+        + Shift+click to select from the existing selection anchor
+        
+        + Disable or override double-click and triple-click
+        
+        + Why does the selection style change on mouseup?
     
-    - Toggle custom selection behavior
-    
-    - Maybe have a button to toggle insert/overwrite too
-
-    - Clearer insert mode cursor
+    - Clearer overwrite mode cursor
     
     - Custom syntax highlighting
         
         + Highlight tablature with articulations and everything
         
         + Highlight `<<` misalignment markers as erroneous
-    
-    - Why does the selection style change on mouseup?
     
     - Maybe add some padding with `renderer.setPadding`?
 
