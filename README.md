@@ -82,7 +82,7 @@ The tablature parser created for the app is available separately as a module [he
         
         + Shift+click to select from the existing selection anchor
         
-        + Disable or override double-click and triple-click
+        + Disable or override double-click and triple-click... and [quad-click (yeah, for real)](https://github.com/ajaxorg/ace/blob/b8e3198ba8e9fe98cdda85e90f517b94d4452b5e/lib/ace/mouse/default_handlers.js#L226)
         
         + Why does the selection style change on mouseup?
     
