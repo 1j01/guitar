@@ -66,7 +66,6 @@ class @Fretboard
 		@strings =
 			for baseNote in ["E4", "B3", "G3", "D3", "A2", "E2"]
 				new GuitarString(baseNote)
-				# new AudioWorkletNode(actx, "white-noise-processor", {processorOptions: {baseNote}})
 		
 		@fret_scale = 1716
 		@x = OSW

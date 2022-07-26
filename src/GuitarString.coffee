@@ -22,14 +22,10 @@ class GuitarString
 		@base_note_n = getNoteN(@base_note_str)
 		@base_freq = getFrequency(@base_note_n)
 		
+		@node = new AudioWorkletNode(actx, "white-noise-processor", {processorOptions: {baseNote: @base_note_str}})
+		@node.connect(pre)
+
 		@data = [0]
-		@script_processor = actx.createScriptProcessor(1024, 1, 1)
-		@script_processor.onaudioprocess = (e)=>
-			@data = e.outputBuffer.getChannelData(0)
-			for i in [0..@data.length]
-				@data[i] = @getSampleData()
-			return
-		@script_processor.connect(pre)
 		
 		@started = no
 		@playing = no
@@ -107,7 +103,7 @@ if registerProcessor?
 	class WhiteNoiseProcessor extends AudioWorkletProcessor
 		process: (inputs, outputs, parameters) ->
 			output = outputs[0]
-			for channel of output
+			for channel in output
 				for i in [0..channel.length]
 					channel[i] = Math.random() * 2 - 1
 			return true

@@ -91,6 +91,7 @@ tablature_presets_select.addEventListener "change", (e)->
 	xhr.send()
 	return
 
+await actx.audioWorklet.addModule("built/GuitarString.js")
 
 @fretboard = new Fretboard()
 $(fretboard.canvas).appendTo(".fretboard-area")
