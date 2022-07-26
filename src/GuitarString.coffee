@@ -91,7 +91,9 @@ if registerProcessor?
 			
 			@freq = @base_freq
 			@fret = 0
+			# to init some stuff like periodIndex
 			@setFrequency(@base_freq)
+			@play(0)
 
 		process: (inputs, outputs, parameters) ->
 			output = outputs[0]
