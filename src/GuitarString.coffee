@@ -35,30 +35,13 @@ class GuitarString
 	
 	play: (@fret)->
 		note_n = @base_note_n + @fret
-		@started = yes
-		@playing = yes
-		@periodIndex = 0
-		@cumulativeIndex = 0
 		@decay = (note_n / 80) + 0.1
-		@current = 0
 		@setFrequency(getFrequency(note_n), note_n)
+		@node.parameters.get("fret").value = @fret
 		return
 	
 	setFrequency: (freq)->
-		@freq = freq
-		@N = Math.round(actx.sampleRate / @freq)
-		unless @period?.length is @N
-			old_period = @period
-			@period = new Float32Array(@N)
-			@periodIndex %= @N #+ 1
-			@cumulativeIndex %= @N #+ 1
-			# @periodIndex = 0
-			# @cumulativeIndex = 0
-			if old_period?
-				@period.set(old_period.subarray(0, @N))
-		# @decay = (note_n / 80) + 0.1
-		# @current = 0
-		return
+		# @node.parameters.get("frequency").value = freq
 	
 	bend: (bend)->
 		# FIXME/TODO: should be a smooth glissando
@@ -78,6 +61,37 @@ class GuitarString
 
 if registerProcessor?
 	class GuitarStringProcessor extends AudioWorkletProcessor
+		@parameterDescriptors = [
+			# {
+			# 	name: "baseNote"
+			# 	defaultValue: "A4"
+			# 	automatable: false
+			# 	type: "string"
+			# }
+			{
+				name: "pitchBend"
+				defaultValue: 0
+				automatable: true
+				type: "number"
+			}
+			{
+				name: "fret"
+				defaultValue: 0
+				minValue: 0
+				maxValue: 100
+				automatable: true
+				type: "number"
+			}
+			{
+				name: "playing"
+				defaultValue: 0.5
+				minValue: 0
+				maxValue: 1
+				automatable: true
+				type: "number"
+			}
+		]
+
 		constructor: ({processorOptions})->
 			super()
 			@base_note_str = processorOptions.baseNote
@@ -97,7 +111,7 @@ if registerProcessor?
 
 		process: (inputs, outputs, parameters) ->
 			output = outputs[0]
-			if Math.random() < 0.05
+			if parameters.playing > 0.5 and not @playing
 				@play(0)
 			for channel in output
 				for i in [0..channel.length]
