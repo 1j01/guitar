@@ -34,7 +34,7 @@ class GuitarString
 		@fret = 0
 	
 	play: (@fret)->
-		console.log("GuitarString::play")
+		# console.log("GuitarString::play")
 		note_n = @base_note_n + @fret
 		@decay = (note_n / 80) + 0.1
 		@setFrequency(getFrequency(note_n), note_n)
@@ -55,19 +55,17 @@ class GuitarString
 		return
 	
 	release: ->
-		console.log("GuitarString::release")
+		# console.log("GuitarString::release")
 		@playing = no
 		# @node.parameters.get("playing").value = 0
 		@node.parameters.get("playing").setValueAtTime(0, actx.currentTime)
-		console.log("released")
 	
 	stop: ->
-		console.log("GuitarString::stop")
+		# console.log("GuitarString::stop")
 		@playing = no
 		@started = no
 		# @node.parameters.get("playing").value = 0
 		@node.parameters.get("playing").setValueAtTime(0, actx.currentTime)
-		console.log("stopped")
 
 if registerProcessor?
 	class GuitarStringProcessor extends AudioWorkletProcessor
@@ -132,12 +130,12 @@ if registerProcessor?
 						@play(parameters.fret[i])
 					if parameters.playing[i] < 0.5 and @playing
 						@playing = no
-						console.log("GuitarStringProcessor: release")
+						# console.log("GuitarStringProcessor: release")
 					channel[i] = @nextSample()
 			return true
 
 		play: (@fret)->
-			console.log("GuitarStringProcessor::play")
+			# console.log("GuitarStringProcessor::play")
 			note_n = @base_note_n + @fret
 			@started = yes
 			@playing = yes
