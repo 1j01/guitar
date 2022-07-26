@@ -128,6 +128,8 @@ if registerProcessor?
 					# TODO: this probably doesn't work with multiple channels
 					if parameters.playing[i] > 0.5 and not @playing
 						@play(parameters.fret[i])
+					if parameters.playing[i] < 0.5 and @playing
+						@playing = no
 					channel[i] = @nextSample()
 			return true
 
