@@ -38,7 +38,8 @@ class GuitarString
 		@decay = (note_n / 80) + 0.1
 		@setFrequency(getFrequency(note_n), note_n)
 		@node.parameters.get("fret").value = @fret
-		@node.parameters.get("playing").value = 1
+		# @node.parameters.get("playing").value = 1
+		@node.parameters.get("playing").setValueAtTime(1, actx.currentTime)
 		return
 	
 	setFrequency: (freq)->
@@ -54,13 +55,16 @@ class GuitarString
 	
 	release: ->
 		@playing = no
-		@node.parameters.get("playing").value = 0
+		# @node.parameters.get("playing").value = 0
+		@node.parameters.get("playing").setValueAtTime(0, actx.currentTime)
+		console.log("released")
 	
 	stop: ->
 		@playing = no
 		@started = no
-		@node.parameters.get("playing").value = 0
-
+		# @node.parameters.get("playing").value = 0
+		@node.parameters.get("playing").setValueAtTime(0, actx.currentTime)
+		console.log("stopped")
 
 if registerProcessor?
 	class GuitarStringProcessor extends AudioWorkletProcessor
@@ -87,7 +91,7 @@ if registerProcessor?
 			}
 			{
 				name: "playing"
-				defaultValue: 0.5
+				defaultValue: 0
 				minValue: 0
 				maxValue: 1
 				automatable: true
@@ -120,7 +124,8 @@ if registerProcessor?
 			# TODO: handle buffer better; for now, take the latest sample
 			if parameters.playing[parameters.playing.length - 1] > 0.5 and not @playing
 				@play(parameters.fret[parameters.fret.length - 1])
-			# console.log "playing", @playing, parameters.playing
+			if currentFrame % 500 == 0
+				console.log "playing", @playing, parameters.playing[parameters.playing.length - 1]
 			for channel in output
 				for i in [0..channel.length]
 					channel[i] = @nextSample()
