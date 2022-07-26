@@ -102,7 +102,7 @@ class @Fretboard
 		
 		@playing_notes = {}
 		
-		$canvas = $("<canvas tabindex=0 touch-action=pan-y/>")
+		$canvas = $("<canvas tabindex=0 style='touch-action: pan-y'/>")
 		@canvas = $canvas[0]
 		
 		prevent = (e)->
