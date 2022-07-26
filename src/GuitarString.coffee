@@ -110,7 +110,6 @@ if registerProcessor?
 			
 			@data = [0]
 			
-			@started = no
 			@playing = no
 			
 			@freq = @base_freq
@@ -120,16 +119,16 @@ if registerProcessor?
 			@play(0)
 			@decay = 0
 			@playing = no
-			@started = no
 
 		process: (inputs, outputs, parameters) ->
 			output = outputs[0]
 			if currentFrame % 500 == 0
-				console.log "playing", @playing, parameters.playing[parameters.playing.length - 1]
+				console.log "playing", @playing, parameters.playing[parameters.playing.length - 1], "fret", @fret
 			for channel in output
 				for i in [0..channel.length]
 					# TODO: this probably doesn't work with multiple channels
 					if parameters.playing[i] > 0.5 and (not @playing or @fret != parameters.fret[i])
+						# @fret = parameters.fret[i] done implicitly by (@fret)->
 						@play(parameters.fret[i])
 					if parameters.playing[i] < 0.5 and @playing
 						@playing = no
