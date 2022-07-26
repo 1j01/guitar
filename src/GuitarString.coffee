@@ -38,6 +38,7 @@ class GuitarString
 		@decay = (note_n / 80) + 0.1
 		@setFrequency(getFrequency(note_n), note_n)
 		@node.parameters.get("fret").value = @fret
+		@node.parameters.get("playing").value = 1
 		return
 	
 	setFrequency: (freq)->
@@ -53,10 +54,12 @@ class GuitarString
 	
 	release: ->
 		@playing = no
+		@node.parameters.get("playing").value = 0
 	
 	stop: ->
 		@playing = no
 		@started = no
+		@node.parameters.get("playing").value = 0
 
 
 if registerProcessor?
@@ -108,11 +111,16 @@ if registerProcessor?
 			# to init some stuff like periodIndex
 			@setFrequency(@base_freq)
 			@play(0)
+			@decay = 0
+			@playing = no
+			@started = no
 
 		process: (inputs, outputs, parameters) ->
 			output = outputs[0]
 			if parameters.playing > 0.5 and not @playing
-				@play(0)
+				# TODO: handle buffer better; for now, take the latest sample
+				@play(parameters.fret[parameters.fret.length - 1])
+			# console.log "playing", @playing, parameters.playing
 			for channel in output
 				for i in [0..channel.length]
 					channel[i] = @nextSample()
