@@ -2,6 +2,9 @@
 PLAYING_DECAY = 0.00001
 RELEASED_DECAY = PLAYING_DECAY * 20
 
+# PLAYING_DECAY = 0.1
+# RELEASED_DECAY = 0.8
+
 notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
 
 getFrequency = (noteN)->
@@ -12,9 +15,6 @@ getNoteN = (noteStr)->
 	octave = parseInt noteStr[-1..]
 	octave -= 1 if i >= notes.indexOf 'C'
 	octave * notes.length + i + 1
-
-# PLAYING_DECAY = 0.1
-# RELEASED_DECAY = 0.8
 
 class GuitarString
 	constructor: (@base_note_str)->
