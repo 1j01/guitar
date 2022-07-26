@@ -117,8 +117,8 @@ if registerProcessor?
 
 		process: (inputs, outputs, parameters) ->
 			output = outputs[0]
-			if parameters.playing > 0.5 and not @playing
-				# TODO: handle buffer better; for now, take the latest sample
+			# TODO: handle buffer better; for now, take the latest sample
+			if parameters.playing[parameters.playing.length - 1] > 0.5 and not @playing
 				@play(parameters.fret[parameters.fret.length - 1])
 			# console.log "playing", @playing, parameters.playing
 			for channel in output
