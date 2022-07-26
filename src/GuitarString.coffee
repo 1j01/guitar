@@ -163,6 +163,8 @@ if registerProcessor?
 			return
 		
 		nextSample: ->
+			if @fret is undefined
+				throw new Error("GuitarStringProcessor: fret is undefined")
 			if @periodIndex is @N
 				@periodIndex = 0
 
