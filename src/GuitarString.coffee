@@ -148,6 +148,9 @@ if registerProcessor?
 			@decay *= if @playing then (1 - PLAYING_DECAY) else (1 - RELEASED_DECAY)
 			# @decay = if @playing then (1 - PLAYING_DECAY) else (1 - RELEASED_DECAY)
 
+			unless isFinite @current
+				throw new Error("@current is #{@current}")
+			
 			return @current
 		
 
