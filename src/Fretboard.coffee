@@ -288,6 +288,10 @@ class @Fretboard
 			@pointerString = mY // sh
 			@pointerStringY = (@pointerString+1/2) * sh
 		
+		if @pointerString >= 0
+			for str, s in @strings when s isnt @pointerString
+				str.release()
+
 		for str, s in @strings
 			sy = (s+1/2)*sh
 			
