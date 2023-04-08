@@ -3,16 +3,23 @@
   "version": "0.1.0",
   "description": "Web app to play/record guitar tabs, and learn scales",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "coffee -o built/ -cw src/"
+    "build": "coffee -o built/ -c src/",
+    "watch": "coffee -o built/ -cw src/",
+    "start": "npx live-server",
+    "predeploy": "node predeploy-check.js",
+    "deploy": "npm run build && gh-pages --src \"{index.html,built,lib,tabs,impulses}\""
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/1j01/guitar.git"
   },
   "keywords": [
+    "fretboard",
+    "scales",
+    "music",
     "guitar",
     "web-app",
+    "tabs",
     "tablature"
   ],
   "author": "Isaiah Odhner <isaiah.odhner@gmail.com> (https://isaiahodhner.io)",
@@ -22,6 +29,7 @@
   },
   "homepage": "https://github.com/1j01/guitar#readme",
   "devDependencies": {
-    "coffeescript": "^2.7.0"
+    "coffeescript": "^2.7.0",
+    "gh-pages": "^5.0.0"
   }
 }

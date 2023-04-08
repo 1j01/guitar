@@ -44,6 +44,15 @@ The `watch` task compiles CoffeeScript when it changes.
 
 `live-server` is a web server that reloads the page when files change. You can use any web server, alternatively.
 
+## Deployment
+
+This app is deployed to GitHub Pages using the `gh-pages` module.
+
+```bash
+npm run build
+npm run deploy
+```
+
 ## TODO
 
 * Better mobile support
