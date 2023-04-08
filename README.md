@@ -32,6 +32,17 @@ The guitar synthesis algorithm is from [guitar-synth](https://github.com/getinst
 
 The tablature parser created for the app is available separately as a module [here][tablature-parser].
 
+## Development
+
+```bash
+npm install
+npm run watch
+npx live-server
+```
+
+The `watch` task compiles CoffeeScript when it changes.
+
+`live-server` is a web server that reloads the page when files change. You can use any web server, alternatively.
 
 ## TODO
 
