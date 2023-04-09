@@ -63,14 +63,9 @@ class @Fretboard
 			scale_highlight_note_text: "#FFFFAA"
 	
 	constructor: ->
-		@strings = [
-			new GuitarString "E4"
-			new GuitarString "B3"
-			new GuitarString "G3"
-			new GuitarString "D3"
-			new GuitarString "A2"
-			new GuitarString "E2"
-		]
+		@strings =
+			for baseNote in ["E4", "B3", "G3", "D3", "A2", "E2"]
+				new GuitarString(baseNote)
 		
 		@fret_scale = 1716
 		@x = OSW
