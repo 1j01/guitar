@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Web app to play/record guitar tabs, and learn scales",
   "scripts": {
+    "test": "cspell-cli lint .",
     "build": "coffee -o built/ -c src/",
     "watch": "coffee -o built/ -cw src/",
     "start": "npx live-server",
