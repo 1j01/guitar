@@ -60,6 +60,7 @@
 	"words": [
 		"actx",
 		"amatronic",
+		"automatable",
 		"automode",
 		"BGDAE",
 		"contextmenu",
@@ -111,6 +112,7 @@
 		"unfocus",
 		"unfocusing",
 		"wahwah",
-		"wholetone"
+		"wholetone",
+		"Worklet"
 	]
 }
