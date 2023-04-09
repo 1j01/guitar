@@ -158,11 +158,13 @@ parseTabs = (tablature)->
 	return notes
 
 
-paddingLeft = (string="", character, length)->
-	(Array(length + 1).join(character) + string).slice(-length)
+paddingLeft = (string, character, length)->
+	string ?= ""
+	return (Array(length + 1).join(character) + string).slice(-length)
 
-paddingRight = (string="", character, length)->
-	(string + Array(length + 1).join(character)).slice(0, length)
+paddingRight = (string, character, length)->
+	string ?= ""
+	return (string + Array(length + 1).join(character)).slice(0, length)
 
 
 stringifyTabs = (notes, tuning = "eBGDAE")->
@@ -177,7 +179,7 @@ stringifyTabs = (notes, tuning = "eBGDAE")->
 		for string, i in strings
 			strings[i] += "#{paddingRight(notes_here[i], "-", max_length)}-"
 	
-	strings.join "\n"
+	return strings.join "\n"
 
 Tablature =
 	parse: parseTabs
