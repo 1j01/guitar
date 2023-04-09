@@ -5,11 +5,20 @@
 
     class Fretboard {
       constructor() {
-        var $canvas, prevent, update_pointer_position;
+        var $canvas, baseNote, prevent, update_pointer_position;
         this.resize = this.resize.bind(this);
         // @x = OSW + Math.max(0, (@canvas.width - @w)/2) # to center it
         this.draw = this.draw.bind(this);
-        this.strings = [new GuitarString("E4"), new GuitarString("B3"), new GuitarString("G3"), new GuitarString("D3"), new GuitarString("A2"), new GuitarString("E2")];
+        this.strings = (function() {
+          var j, len, ref, results;
+          ref = ["E4", "B3", "G3", "D3", "A2", "E2"];
+          results = [];
+          for (j = 0, len = ref.length; j < len; j++) {
+            baseNote = ref[j];
+            results.push(new GuitarString(baseNote));
+          }
+          return results;
+        })();
         this.fret_scale = 1716;
         this.x = OSW;
         // @TODO: balance visual weight vertically
