@@ -16,7 +16,7 @@ getNoteN = (noteStr)->
 # PLAYING_DECAY = 0.1
 # RELEASED_DECAY = 0.8
 
-class @GuitarString
+class GuitarString
 	constructor: (@base_note_str)->
 		@label = @base_note_str[0]
 		@base_note_n = getNoteN(@base_note_str)
@@ -101,3 +101,19 @@ class @GuitarString
 	stop: ->
 		@playing = no
 		@started = no
+
+
+if registerProcessor?
+	class WhiteNoiseProcessor extends AudioWorkletProcessor
+		process: (inputs, outputs, parameters) ->
+			output = outputs[0]
+			for channel of output
+				for i in [0..channel.length]
+					channel[i] = Math.random() * 2 - 1
+			return true
+
+	registerProcessor('white-noise-processor', WhiteNoiseProcessor)
+else
+	@GuitarString = GuitarString
+
+# class GuitarStringProcessor extends AudioWorkletProcessor

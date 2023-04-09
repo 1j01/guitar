@@ -5,6 +5,8 @@ tuna = new Tuna(actx)
 addEventListener "pointerdown", -> @actx.resume()
 addEventListener "keydown", -> @actx.resume()
 
+@actx.audioWorklet.addModule("built/GuitarString.js")
+
 connect = (nodes...)->
 	for node, i in nodes when next = nodes[i+1]
 		node.connect next.input ? next.destination ? next
