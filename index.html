@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Guitar Recorder</title>
+		<style>
+			html, body {
+				padding: 0;
+				margin: 3px;
+				font-family: sans-serif;
+			}
+			.header {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+			}
+			.spacer {
+				flex: 1;
+			}
+			.header h2 {
+				padding-right: 1em;
+			}
+			.tablature-editor {
+				width: 100%;
+				height: 200px;
+				border: rgba(0, 0, 0, 0.4) solid 1px;
+				box-sizing: border-box;
+			}
+			.tablature-editor.ace_focus {
+				box-shadow: 0 0 2px #0080FF;
+			}
+			.playback-position,
+			.playing-note {
+				border-radius: 0 !important;
+				position: absolute;
+				z-index: 5;
+			}
+			.playback-position {
+				box-shadow: inset -4px 0 0 0 rgba(228, 0, 255, 0.2), inset -2px 0 0 0 rgba(228, 0, 255, 0.5);
+			}
+			.playing-note {
+				background: rgba(0, 255, 255, 0.5);
+			}
+			.error {
+				background: #E9311E;
+				color: rgb(255, 255, 255);
+				padding: 0.2em;
+			}
+			footer {
+				margin-top: 1em;
+				padding: 1em 0;
+			}
+		</style>
+		<script src="lib/jquery.min.js"></script>
+		<script src="lib/webaudioshim.js"></script>
+		<script src="lib/tuna.js"></script>
+		<script src="lib/teoria.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
+	</head>
+	<body>
+		<h1>Guitar Recorder</h1>
+		<div class="header">
+			<h2>Interactive Fretboard</h2>
+			<div class="spacer"></div>
+			<div class="controls">
+				<label>Theme: <select class="theme"></select></label>
+				<label>Scale:
+					<select id="scale">
+						<option value="" selected>None (Highlight Off)</option>
+						<option value="harmonicchromatic">Harmonic Chromatic</option>
+						<option value="major">Ionian (Major)</option>
+						<option value="minor">Aeolian (Minor)</option>
+						<option value="dorian">Dorian</option>
+						<option value="phrygian">Phrygian</option>
+						<option value="lydian">Lydian</option>
+						<option value="mixolydian">Mixolydian</option>
+						<option value="locrian">Locrian</option>
+						<option value="majorpentatonic">Major Pentatonic</option>
+						<option value="minorpentatonic">Minor Pentatonic</option>
+						<option value="blues">Blues</option>
+						<option value="doubleharmonic">Double Harmonic (Flamenco)</option>
+						<option value="harmonicminor">Harmonic Minor</option>
+						<option value="melodicminor">Melodic Minor</option>
+						<option value="wholetone">Whole Tone</option>
+					</select>
+				</label>
+				<label> on <select id="scale-start">
+					<option value="C" selected>C</option>
+					<option value="C#">C♯</option>
+					<option value="D">D</option>
+					<option value="D#">D♯</option>
+					<option value="E">E</option>
+					<option value="F">F</option>
+					<option value="F#">F♯</option>
+					<option value="G">G</option>
+					<option value="G#">G♯</option>
+					<option value="A">A</option>
+					<option value="A#">A♯</option>
+					<option value="B">B</option>
+				</select></label>
+				<!-- <label><input id="disable-keys-outside-scale" type="checkbox">Disable playing outside scale / Constrain to scale</label> -->
+				<!-- TODO: add the above option and maybe an option to toggle note names, because they can be noisy -->
+			</div>
+		</div>
+		<div class="fretboard-area area"></div>
+		<div class="header">
+			<h2>Tablature Editor</h2>
+			<div class="controls">
+				<!-- TODO: icon buttons -->
+				<button id="undo">Undo</button>
+				<button id="redo">Redo</button>
+				<!-- (((multi-(line/row/string)) / (staff/stave)) (selection/cursor) [mode]) -->
+				<label title="Select across all lines in a staff/stave, and edit each line at once."><input id="multi-row-selection-mode" type="checkbox" checked>Multi-Row Cursor</label>
+				<label title="Type over text at the cursor, replacing it (good for spacial editing) - as opposed to inserting text like normal"><input id="overwrite-mode" type="checkbox">Overwrite</label>
+				<!-- TODO: make these toggle buttons instead of plain checkboxes? -->
+			</div>
+			<div class="spacer"></div>
+			<div class="controls">
+				<!-- TODO: probably a button like Load Tabs or Load Song that prompts you with instructions -->
+				<!-- there's not really enough room in one line of text to explain that you can simply copy the webpage contents with Ctrl+A Ctrl+C -->
+				<!-- could also integrate some services/searching into the app directly -->
+				<span>Search the web for any song and paste the tabs here.</span>
+				<label>Or load a preset:
+					<select id="tablature-presets">
+						<option value="" selected>Choose Song</option>
+						<option value="tabs/tetris.txt">Tetris (fancy version!)</option>
+						<option value="tabs/ievan polkka.txt">Ievan Polkka</option>
+						<option value="tabs/still alive.txt">Still Alive (Portal)</option>
+						<option value="tabs/my song.txt">My Song (Isaiah Odhner)</option>
+					</select>
+				</label>
+			</div>
+		</div>
+		<div class="tablature-area area">
+			<div class="tablature-error error" role="alert" aria-hidden="true" style="display: none"></div>
+			<div class="tablature-editor"></div>
+		</div>
+		<footer>
+			Usage info, source code, and to-do list <a href="https://github.com/1j01/guitar">on GitHub</a>.
+			Made by <a href="https://isaiahodhner.io">Isaiah Odhner</a>.
+		</footer>
+		<script src="built/helpers.js"></script>
+		<script src="built/audio-setup.js"></script>
+		<script src="built/tablature.js"></script>
+		<script src="built/TablatureEditor.js"></script>
+		<script src="built/GuitarString.js"></script>
+		<script src="built/Fretboard.js"></script>
+		<script src="built/app.js"></script>
+	</body>
+</html>
