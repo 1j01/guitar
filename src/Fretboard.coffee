@@ -274,7 +274,7 @@ class @Fretboard
 			for i in [0..n_inlays]
 				# i for inlay of course
 				ctx.beginPath()
-				ctx.arc(mx, (i+1/2)/n_inlays*@h, 7, 0, tau, no)
+				ctx.arc(mx, (i+1/2)/n_inlays*@h, 7, 0, Math.PI*2, no)
 				ctx.fill()
 				# ctx.fillRect(mx, Math.cos(mx)*@h, 5, 5) # faux microtonal aesthetic
 			
@@ -321,7 +321,7 @@ class @Fretboard
 					@strings[@pointerString].play(@pointerFret)
 					
 				else if @pointerBend
-					@strings[@pointerString].bend(abs(mY-@pointerStringY))
+					@strings[@pointerString].bend(Math.abs(mY-@pointerStringY))
 				
 			else
 				ctx.fillStyle = "rgba(0, 255, 0, 0.2)"

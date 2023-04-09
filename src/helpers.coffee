@@ -1,6 +1,4 @@
 
-{@abs, @sin, @cos} = Math
-@tau = 2*Math.PI
 
 notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
 
