@@ -285,7 +285,7 @@ class @Fretboard
 		# vibrating only after the furthest to the right finger hold
 		# so playback visualization makes physical sense (esp. when playing back and playing via the fretboard at the same time and bending)
 		# (and possibly model multiple finger holds in the string state so that it can draw between bent holds before the rightmost finger hold even tho they'd be ineffectual)
-		# and TODO: change the pitch of the synth when you release a note (to open, or the nearest remaining finger hold) (without reactuating, i.e. a pull-off (and not a flick-off))
+		# and TODO: change the pitch of the synth when you release a note (to open, or the nearest remaining finger hold) (without re-actuating, i.e. a pull-off (and not a flick-off))
 
 		# draw strings
 		sh = @h/@strings.length
