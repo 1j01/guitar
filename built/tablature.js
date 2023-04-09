@@ -208,11 +208,17 @@ ${misaligned}`);
     return notes;
   };
 
-  paddingLeft = function(string = "", character, length) {
+  paddingLeft = function(string, character, length) {
+    if (string == null) {
+      string = "";
+    }
     return (Array(length + 1).join(character) + string).slice(-length);
   };
 
-  paddingRight = function(string = "", character, length) {
+  paddingRight = function(string, character, length) {
+    if (string == null) {
+      string = "";
+    }
     return (string + Array(length + 1).join(character)).slice(0, length);
   };
 

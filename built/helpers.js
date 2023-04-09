@@ -2,20 +2,16 @@
 (function() {
   var notes;
 
-  ({abs: this.abs, sin: this.sin, cos: this.cos} = Math);
-
-  this.tau = 2 * Math.PI;
-
   notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
 
-  this.getFrequency = function(noten) {
-    return 440 * 2 ** ((noten - 49) / notes.length);
+  this.getFrequency = function(noteN) {
+    return 440 * 2 ** ((noteN - 49) / notes.length);
   };
 
-  this.getNoteN = function(notestr) {
+  this.getNoteN = function(noteStr) {
     var i, octave;
-    i = notes.indexOf(notestr.slice(0, -1));
-    octave = parseInt(notestr.slice(-1));
+    i = notes.indexOf(noteStr.slice(0, -1));
+    octave = parseInt(noteStr.slice(-1));
     if (i >= notes.indexOf('C')) {
       octave -= 1;
     }

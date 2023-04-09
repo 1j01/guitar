@@ -205,7 +205,7 @@
           for (i = j = 0, ref = n_inlays; (0 <= ref ? j <= ref : j >= ref); i = 0 <= ref ? ++j : --j) {
             // i for inlay of course
             ctx.beginPath();
-            ctx.arc(mx, (i + 1 / 2) / n_inlays * this.h, 7, 0, tau, false);
+            ctx.arc(mx, (i + 1 / 2) / n_inlays * this.h, 7, 0, Math.PI * 2, false);
             ctx.fill();
           }
           // ctx.fillRect(mx, Math.cos(mx)*@h, 5, 5) # faux microtonal aesthetic
@@ -217,7 +217,7 @@
         // vibrating only after the furthest to the right finger hold
         // so playback visualization makes physical sense (esp. when playing back and playing via the fretboard at the same time and bending)
         // (and possibly model multiple finger holds in the string state so that it can draw between bent holds before the rightmost finger hold even tho they'd be ineffectual)
-        // and TODO: change the pitch of the synth when you release a note (to open, or the nearest remaining finger hold) (without reactuating, i.e. a pull-off (and not a flick-off))
+        // and TODO: change the pitch of the synth when you release a note (to open, or the nearest remaining finger hold) (without re-actuating, i.e. a pull-off (and not a flick-off))
 
         // draw strings
         sh = this.h / this.strings.length;
@@ -252,7 +252,7 @@
               });
               this.strings[this.pointerString].play(this.pointerFret);
             } else if (this.pointerBend) {
-              this.strings[this.pointerString].bend(abs(mY - this.pointerStringY));
+              this.strings[this.pointerString].bend(Math.abs(mY - this.pointerStringY));
             }
           } else {
             ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
