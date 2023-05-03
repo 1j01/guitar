@@ -55,50 +55,50 @@ npm run deploy
 
 ## TODO
 
-* Better mobile support
+* Better mobile support.
 
-    - Play back recorded notes with a button
+    - Play back recorded notes with a button.
     
-    - Multitouch
+    - Multitouch.
 
-* Make web application self-explanatory and test accessibility
+* Make web application self-explanatory and test accessibility.
 
-* Make bending (MMB) less ridiculous
+* Make bending (MMB) less ridiculous.
 
-* Record chords
+* Record chords.
   (with multitouch or a modifier key, maybe also have some sort of toggle)
 
-* Strum chords in playback, maybe have up/down arrows for up/down strumming
+* Strum chords in playback, maybe have up/down arrows for up/down strumming.
 
-* Source mapping, so you can see and keep the rhythm, articulations, and comments as context
+* Source mapping, so you can see and keep the rhythm, articulations, and comments as context.
 
-* Record, parse, and play back articulations
-  such as slides, bends, vibratos, hammer-ons, and pull-offs
+* Record, parse, and play back articulations.
+  such as slides, bends, vibratos, hammer-ons, and pull-offs.
 
-* Different sound for sliding than for plucking/picking
+* Different sound for sliding than for plucking/picking.
 
 * Different sound in general, ha, since it's not great...
 
-* Support for different tunings
+* Support for different tunings.
 
-* Allow configuring the effects chain
+* Allow configuring the effects chain.
   (at least toggle distortion on/off)
 
-* Clear way set focus to the fretboard for playback (unfocusing the tablature editor), via the keyboard
+* Clear way set focus to the fretboard for playback (unfocusing the tablature editor), via the keyboard.
 
 * Tablature editor
     
-    - Scroll with the playback position
+    - Scroll with the playback position.
     
-    - Make the playback position indicator different while playing, so it's clearer whether its showing what's playing or what's next
+    - Make the playback position indicator different while playing, so it's clearer whether its showing what's playing or what's next.
     
-    - Set the position in the song when you click in the tablature editor
+    - Set the position in the song when you click in the tablature editor.
     
-    - Handle multi-digit numbers when highlighting notes
+    - Handle multi-digit numbers when highlighting notes.
     
-    - Insert and overwrite notes with the virtual guitar fretboard (as opposed to just appending (which is a specific form of inserting))
+    - Insert and overwrite notes with the virtual guitar fretboard (as opposed to just appending (which is a specific form of inserting)).
     
-    - Multi-String Cursor mode
+    - Multi-String Cursor mode.
         
         + Shift+click to select from the existing selection anchor
         
