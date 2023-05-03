@@ -8,7 +8,7 @@
     "watch": "coffee -o built/ -cw src/",
     "start": "npx live-server",
     "predeploy": "npm run build && npm test && node predeploy-check.js",
-    "deploy": "gh-pages --src \"{index.html,{built,lib,tabs,impulses}/**/*}\" --dist ."
+    "deploy": "gh-pages --src \"{index.html,*favicon*,{built,lib,tabs,impulses}/**/*}\" --dist ."
   },
   "repository": {
     "type": "git",
