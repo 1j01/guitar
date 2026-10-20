@@ -119,8 +119,8 @@ parseTabs = (tablature)->
 	
 	# heuristically address the ambiguity where
 	# e.g. --12-- can mean either twelve or one then two
-	# TODO: look only within matched blocks
-	squishy = tablature.match(/[03-9]\d/)?
+	tab_blocks = (block.lines.join("\n") for block in blocks when block.lines.length > 1).join("\n")
+	squishy = tab_blocks.match(/[03-9]\d/)?
 	
 	pos = 0
 	cont = yes
